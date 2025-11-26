@@ -1,0 +1,46 @@
+.buttonWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.centeredButton {
+  position: relative;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  border: 4px solid white;
+  background-color: #0070f3;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  z-index: 1;
+}
+
+.blackSquare {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  z-index: 0;
+  transition: transform 0.2s ease;
+  transform: translate(10px, 10px);
+}
+
+.centeredButton:hover {
+  background-color: #0051cc;
+}
+
+.centeredButton:active {
+  background-color: #003d99;
+}
+
+.centeredButton.pressed {
+  transform: scale(0.98);
+}
+
+.blackSquare.squarePressed {
+  transform: translate(0, 0);
+}
+

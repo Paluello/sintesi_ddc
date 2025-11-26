@@ -1,0 +1,15 @@
+.toolbar {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  z-index: 10000;
+  pointer-events: auto;
+}
+
+/* Le dimensioni dei button sono gestite dal componente IconButton */
+/* Rimossi gli override per rispettare le dimensioni atomic design */
+

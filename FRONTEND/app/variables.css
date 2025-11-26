@@ -1,0 +1,204 @@
+:root {
+  /* ===== COLORS ===== */
+  
+  /* Primary Colors */
+  --color-red: #d32f2f;
+  --color-red-dark: #c62828;
+  --color-blue: #1976d2;
+  --color-blue-dark: #1565c0;
+  
+  /* Text Colors */
+  --color-text-primary: #333;
+  --color-text-secondary: #555;
+  --color-text-tertiary: #666;
+  --color-text-quaternary: #888;
+  --color-text-muted: #999;
+  
+  /* Background Colors */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #fafafa;
+  --color-bg-tertiary: #f5f5f5;
+  --color-bg-preview: #f5f5f5;
+  --color-bg-loading: #f9f9f9;
+  
+  /* Border Colors */
+  --color-border-light: #e0e0e0;
+  --color-border-medium: #b0b0b0;
+  --color-border-dark: #999;
+  
+  /* Error Colors */
+  --color-error: #c62828;
+  --color-error-bg: #ffebee;
+  
+  /* Warning Colors */
+  --color-warning: #856404;
+  --color-warning-bg: #fff3cd;
+  --color-warning-border: #ffc107;
+  
+  /* Overlay */
+  --color-overlay: rgba(0, 0, 0, 0.5);
+  --color-overlay-light: rgba(0, 0, 0, 0.1);
+  --color-overlay-medium: rgba(0, 0, 0, 0.2);
+  --color-overlay-dark: rgba(0, 0, 0, 0.3);
+  
+  /* Spinner */
+  --color-spinner-light: #f3f3f3;
+  --color-spinner-primary: #1976d2;
+  
+  /* Button States */
+  --color-button-hover-bg: #e3f2fd;
+  --color-button-hover-bg-dark: #bbdefb;
+  --color-button-cancel-bg: #f5f5f5;
+  --color-button-cancel-hover: #e0e0e0;
+  
+  /* ===== TYPOGRAPHY ===== */
+  
+  /* Font Family */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  
+  /* Geist Font Family */
+  --font-geist: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  
+  /* Geist Mono Font Family */
+  --font-mono: 'Geist Mono', 'Courier New', Courier, monospace;
+  
+  /* Font Sizes - Responsive con clamp() */
+  --font-size-h1: clamp(24px, 5vw, 32px);
+  --font-size-h2: clamp(20px, 4vw, 24px);
+  --font-size-h3: clamp(18px, 3.5vw, 20px);
+  --font-size-body: clamp(13px, 2vw, 16px);
+  --font-size-body-expanded: clamp(16px, 2.5vw, 20px);
+  --font-size-small: clamp(11px, 1.5vw, 14px);
+  --font-size-tiny: clamp(10px, 1vw, 12px);
+  
+  /* Font Sizes specifici (per casi particolari) */
+  --font-size-title-large: clamp(26px, 5.5vw, 32px);
+  --font-size-title-medium: clamp(20px, 4.5vw, 24px);
+  --font-size-title-small: clamp(18px, 4vw, 22px);
+  --font-size-input: 16px; /* Evita zoom su iOS */
+  --font-size-button: 16px;
+  
+  /* Font Weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 800;
+  
+  /* Line Heights */
+  --line-height-tight: 1;
+  --line-height-normal: 1.2;
+  --line-height-medium: 1.5;
+  
+  /* ===== SPACING ===== */
+  
+  /* Padding */
+  --spacing-xs: 4px;
+  --spacing-sm: 6px;
+  --spacing-md: 8px;
+  --spacing-lg: 12px;
+  --spacing-xl: 14px;
+  --spacing-2xl: 16px;
+  --spacing-3xl: 20px;
+  --spacing-4xl: 24px;
+  --spacing-5xl: 40px;
+  
+  /* Margin */
+  --margin-xs: 4px;
+  --margin-sm: 6px;
+  --margin-md: 8px;
+  --margin-lg: 12px;
+  --margin-xl: 16px;
+  --margin-2xl: 20px;
+  --margin-3xl: 24px;
+  
+  /* Gap */
+  --gap-xs: 4px;
+  --gap-sm: 8px;
+  --gap-md: 12px;
+  --gap-lg: 16px;
+  --gap-xl: 20px;
+  --gap-2xl: 24px;
+  
+  /* ===== BORDERS ===== */
+  
+  /* Border Radius */
+  --radius-none: 0;
+  --radius-sm: 3px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 50%;
+  
+  /* Border Width */
+  --border-width-thin: 1px;
+  --border-width-medium: 2px;
+  --border-width-thick: 3px;
+  --border-width-thickest: 5px;
+  --border-width-expanded: 6px;
+  
+  /* ===== SHADOWS ===== */
+  
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 4px 20px rgba(0, 0, 0, 0.15);
+  --shadow-2xl: 0 8px 24px rgba(0, 0, 0, 0.3);
+  --shadow-left: -2px 0 8px rgba(0, 0, 0, 0.1);
+  
+  /* ===== BREAKPOINTS ===== */
+  
+  --breakpoint-tablet: 480px;
+  --breakpoint-desktop: 768px;
+  
+  /* ===== Z-INDEX ===== */
+  
+  --z-index-base: 1;
+  --z-index-overlay: 100;
+  --z-index-modal-overlay: 899;
+  --z-index-panel: 900;
+  --z-index-modal: 999;
+  --z-index-expanded: 1000;
+  --z-index-dragging: 1000;
+  
+  /* ===== TRANSITIONS ===== */
+  
+  --transition-fast: 0.1s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+  --transition-cubic: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* ===== SIZES ===== */
+  
+  /* Postit */
+  --postit-size-mobile: 240px;
+  --postit-size-tablet: 300px;
+  --postit-size-desktop: 360px;
+  --postit-tail-reserve: 48px;
+  
+  /* Touch Targets */
+  --touch-target-min: 44px;
+  
+  /* Spinner */
+  --spinner-size: 40px;
+  --spinner-border-width: 4px;
+  
+  /* Close Button */
+  --close-button-size-mobile: 32px;
+  --close-button-size-desktop: 36px;
+  
+  /* Panel Width */
+  --panel-width-desktop: 400px;
+  
+  /* Modal */
+  --modal-max-width-mobile: 100%;
+  --modal-max-width-tablet: 500px;
+  --modal-max-width-desktop: 500px;
+  
+  /* Grid */
+  --grid-size: 20px;
+}
+

@@ -1,0 +1,250 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-index-expanded, 1000);
+  background: var(--color-overlay-dark, rgba(9, 9, 9, 0.75));
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(var(--spacing-lg, 16px), 5vw, var(--spacing-5xl, 48px));
+  overflow-y: auto;
+}
+
+.overlayHidden {
+  background: transparent;
+  backdrop-filter: none;
+  pointer-events: none;
+}
+
+.overlayOpening {
+  animation: overlayEnter 280ms ease forwards;
+}
+
+.overlayClosing {
+  animation: overlayExit 220ms ease forwards;
+}
+
+.modalWrapper {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.modalSurface {
+  position: relative;
+  width: min(92vw, 560px);
+  min-height: 200px;
+  height: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalSvg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.modalSurfaceOpening {
+  animation: modalBounceIn 420ms cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+.modalSurfaceClosing {
+  animation: modalBounceOut 280ms cubic-bezier(0.55, 0, 0.55, 0.2) forwards;
+}
+
+.closeButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: clamp(28px, 7vw, 48px);
+  height: clamp(28px, 7vw, 48px);
+  border: none;
+  background: transparent;
+  background-image: url('/images/tasti/butt_cross.svg');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  cursor: pointer;
+  transition: transform var(--transition-fast, 120ms), opacity var(--transition-fast, 120ms);
+  z-index: 2;
+  pointer-events: auto;
+}
+
+.closeButtonRelative {
+  position: relative;
+  align-self: flex-end;
+  top: auto;
+  right: auto;
+}
+
+.closeButton:hover {
+  transform: scale(1.05);
+  opacity: 0.95;
+}
+
+.closeButton:active {
+  transform: scale(0.95);
+  opacity: 0.85;
+}
+
+.safeArea {
+  position: absolute;
+  top: var(--base-modal-safe-inset-top, 8%);
+  right: var(--base-modal-safe-inset-right, 8%);
+  left: var(--base-modal-safe-inset-left, 8%);
+  /* padding-bottom sarà impostato dinamicamente in pixel via JavaScript */
+  /* perché CSS padding-bottom% è relativo alla larghezza, non all'altezza */
+  padding-bottom: var(--base-modal-safe-inset-bottom-px, 0px);
+  border-radius: var(--base-modal-safe-radius, 12px);
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+  gap: 6px;
+  box-sizing: border-box;
+}
+
+.imageArea {
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: 70%;
+  border-radius: inherit;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: clamp(var(--spacing-sm, 12px), 2vw, var(--spacing-xl, 24px));
+  text-align: center;
+  color: var(--base-modal-image-text-color, rgba(255, 255, 255, 0.9));
+}
+
+.imageArea figure {
+  width: 100%;
+  max-width: var(--base-modal-image-container-max-width, 360px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(var(--spacing-sm, 12px), 2vw, var(--spacing-xl, 24px));
+  margin: 0;
+}
+
+.imageArea img,
+.imageArea svg,
+.imageArea video,
+.imageArea picture,
+.imageArea canvas {
+  width: min(100%, var(--base-modal-image-media-max-width, 320px));
+  height: auto;
+  object-fit: contain;
+  filter: var(--base-modal-image-media-filter, none);
+}
+
+.imageArea figcaption {
+  font-size: clamp(14px, 2vw, 18px);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.imagePlaceholder {
+  font-size: clamp(14px, 2.4vw, 18px);
+  color: var(--base-modal-image-placeholder-color, rgba(255, 255, 255, 0.8));
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.contentArea {
+  flex: 1 1 auto;
+  overflow-y: visible;
+  overflow-x: visible;
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  background: var(--base-modal-content-bg, rgba(5, 5, 5, 0.35));
+  border-radius: calc(var(--base-modal-safe-radius, 12px) * 0.8);
+  box-shadow: var(
+    --base-modal-content-shadow,
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08)
+  );
+}
+
+.contentArea > * {
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.contentArea input,
+.contentArea textarea,
+.contentArea select {
+  max-width: 100%;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+@keyframes overlayEnter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes overlayExit {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes modalBounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.82) translateY(24px);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1.08) translateY(-12px);
+  }
+  75% {
+    transform: scale(0.97) translateY(6px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modalBounceOut {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  40% {
+    transform: scale(1.04) translateY(-8px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.75) translateY(32px);
+  }
+}
+

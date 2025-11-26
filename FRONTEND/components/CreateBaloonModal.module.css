@@ -1,0 +1,338 @@
+.modalContent {
+  --base-modal-content-bg: rgba(255, 255, 255, 0.92);
+  --base-modal-content-shadow: none;
+  --base-modal-content-padding: clamp(28px, 4.5vw, 44px);
+  color: var(--color-text-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-2xl);
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-2xl);
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.title {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-semibold);
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-2xl);
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gap-sm);
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.input {
+  padding: var(--spacing-xl);
+  min-height: 48px;
+  border: none;
+  border-radius: 0;
+  font-size: var(--font-size-input);
+  font-family: inherit;
+  transition: opacity var(--transition-normal);
+  resize: vertical;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  position: relative;
+  color: #ffffff;
+  overflow: visible;
+}
+
+.input::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 1; /* Firefox */
+}
+
+.input:focus::placeholder {
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  opacity: 0.95;
+  background: transparent;
+}
+
+.textarea {
+  min-height: 120px;
+}
+
+.customSelect {
+  position: relative;
+  width: 100%;
+}
+
+.selectButton {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: var(--spacing-xl) var(--spacing-5xl) var(--spacing-xl) var(--spacing-xl);
+  min-height: 48px;
+  border: none;
+  border-radius: 0;
+  font-size: var(--font-size-input);
+  font-family: inherit;
+  background-image: linear-gradient(rgba(240,240,240,0.4),rgba(240,240,240,0.4)), url('/images/rettangoli/rettangolini-03.svg');
+  background-size: 100% 100% !important;
+  background-repeat: no-repeat !important;
+  background-position: center;
+  -webkit-mask-image: none;
+  mask-image: none;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: opacity var(--transition-normal);
+  text-align: left;
+  box-sizing: border-box;
+  position: relative;
+  overflow: visible;
+}
+
+.selectButton:hover:not(:disabled) {
+  opacity: 0.95;
+  background-image: linear-gradient(rgba(240,240,240,0.6),rgba(240,240,240,0.6)), url('/images/rettangoli/rettangolini-03.svg');
+  background-size: 100% 100% !important;
+  background-repeat: no-repeat !important;
+  background-position: center;
+}
+
+.selectButton:focus {
+  outline: none;
+  opacity: 0.95;
+  background-image: linear-gradient(rgba(240,240,240,0.6),rgba(240,240,240,0.6)), url('/images/rettangoli/rettangolini-03.svg');
+  background-size: 100% 100% !important;
+  background-repeat: no-repeat !important;
+  background-position: center;
+}
+
+.selectButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-image: linear-gradient(rgba(240,240,240,0.2),rgba(240,240,240,0.2)), url('/images/rettangoli/rettangolini-03.svg');
+  background-size: 100% 100% !important;
+  background-repeat: no-repeat !important;
+  background-position: center;
+}
+
+.selectButtonOpen {
+  opacity: 0.95;
+  background-image: linear-gradient(rgba(240,240,240,0.6),rgba(240,240,240,0.6)), url('/images/rettangoli/rettangolini-03.svg');
+  background-size: 100% 100% !important;
+  background-repeat: no-repeat !important;
+  background-position: center;
+}
+
+.selectButtonText {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selectArrow {
+  flex-shrink: 0;
+  margin-left: var(--gap-sm);
+  color: var(--color-text-tertiary);
+  transition: transform var(--transition-normal);
+}
+
+.selectArrowOpen {
+  transform: rotate(180deg);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + var(--spacing-xs));
+  left: 0;
+  right: 0;
+  background: white;
+  border: var(--border-width-medium) solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-index-expanded);
+  max-height: 200px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dropdownItem {
+  width: 100%;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border: none;
+  background: none;
+  text-align: left;
+  font-size: var(--font-size-input);
+  font-family: inherit;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  display: block;
+  box-sizing: border-box;
+}
+
+.dropdownItem:hover {
+  background-color: var(--color-bg-tertiary);
+}
+
+.dropdownItemSelected {
+  background-color: var(--color-button-hover-bg);
+  color: var(--color-blue);
+  font-weight: var(--font-weight-medium);
+}
+
+.dropdownItemSelected:hover {
+  background-color: var(--color-button-hover-bg-dark);
+}
+
+.selectLoading {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: var(--spacing-xl);
+  min-height: 48px;
+  border: none;
+  border-radius: 0;
+  font-size: var(--font-size-input);
+  color: var(--color-text-tertiary);
+  background-image: linear-gradient(rgba(240,240,240,0.4),rgba(240,240,240,0.4)), url('/images/rettangoli/rettangolini-03.svg');
+  background-size: 100% 100% !important;
+  background-repeat: no-repeat !important;
+  background-position: center;
+  -webkit-mask-image: none;
+  mask-image: none;
+  text-align: center;
+  position: relative;
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+.hint {
+  font-size: var(--font-size-tiny);
+  color: var(--color-text-muted);
+  margin-top: var(--spacing-xs);
+  font-style: italic;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--spacing-4xl);
+  margin-top: var(--gap-sm);
+  align-items: center;
+  width: 100%;
+}
+
+.button {
+  padding: var(--spacing-md) var(--spacing-2xl);
+  border: none;
+  border-radius: 0;
+  font-size: var(--font-size-button);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: opacity var(--transition-normal);
+  font-family: inherit;
+  min-height: auto;
+  width: auto;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  position: relative;
+  color: #ffffff;
+  overflow: visible;
+  box-sizing: border-box;
+  display: inline-block;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.buttonCancel {
+  color: var(--color-text-primary);
+}
+
+.buttonCancel:focus {
+  outline: none;
+  opacity: 0.95;
+}
+
+.buttonCancel:active:not(:disabled) {
+  opacity: 0.9;
+}
+
+.buttonSubmit {
+  color: white;
+}
+
+.buttonSubmit:focus {
+  outline: none;
+  opacity: 0.95;
+}
+
+.buttonSubmit:active:not(:disabled) {
+  opacity: 0.9;
+}
+
+@media (min-width: 480px) {
+  .actions {
+    flex-direction: row;
+    justify-content: center;
+    gap: var(--spacing-5xl);
+  }
+
+  .button {
+    width: auto;
+    min-width: auto;
+  }
+}
+
+@media (hover: hover) {
+  .buttonCancel:hover:not(:disabled) {
+    opacity: 0.95;
+  }
+
+  .buttonSubmit:hover:not(:disabled) {
+    opacity: 0.95;
+  }
+}

@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "BACKEND"
+		},
+		{
+			"path": "FRONTEND"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "FRONTEND"
+	}
+}

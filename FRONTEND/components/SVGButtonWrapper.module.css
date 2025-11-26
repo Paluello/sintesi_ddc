@@ -1,0 +1,15 @@
+.wrapper {
+  position: relative;
+  display: inline-block;
+  text-align: center;
+}
+
+.svgOverlay {
+  /* SVG overlay styles */
+}
+
+.buttonContainer {
+  position: relative;
+  display: inline-block;
+}
+
