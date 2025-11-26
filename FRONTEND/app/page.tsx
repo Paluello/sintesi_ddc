@@ -32,6 +32,7 @@ export default function HomePage() {
     startPan,
     isPanning,
     viewportToCanvas,
+    initializeTransform,
   } = useCanvasTransform();
 
   // Controlla se il tutorial è già stato visto al mount
@@ -50,6 +51,51 @@ export default function HomePage() {
       setAuthReady(true);
     });
   }, []);
+
+  // Inizializza la board centrata al mount e al resize
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    let resizeTimeoutId: NodeJS.Timeout | null = null;
+
+    const initializeBoard = () => {
+      // Usa clientWidth/clientHeight che sono più affidabili per il layout
+      // e non includono scrollbar o altri elementi
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+      
+      // Assicurati che abbiamo dimensioni valide
+      if (width > 0 && height > 0) {
+        initializeTransform(width, height);
+      }
+    };
+
+    // Inizializza al mount con un piccolo delay per assicurarsi che il DOM sia completamente renderizzato
+    const timeoutId = setTimeout(() => {
+      initializeBoard();
+    }, 0);
+
+    // Gestisci il resize della finestra per ri-centrare la board
+    const handleResize = () => {
+      // Usa un debounce per evitare calcoli multipli rapidi durante il resize
+      if (resizeTimeoutId) {
+        clearTimeout(resizeTimeoutId);
+      }
+      resizeTimeoutId = setTimeout(() => {
+        initializeBoard();
+      }, 100);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      clearTimeout(timeoutId);
+      if (resizeTimeoutId) {
+        clearTimeout(resizeTimeoutId);
+      }
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [initializeTransform]);
 
   // Registra manualmente l'event listener wheel con { passive: false }
   useEffect(() => {
@@ -109,7 +155,7 @@ export default function HomePage() {
     const viewportCenterY = rect.height / 2;
     
     // Converti il centro della viewport in coordinate canvas
-    const canvasCoords = viewportToCanvas(viewportCenterX, viewportCenterY);
+    const canvasCoords = viewportToCanvas(viewportCenterX, viewportCenterY, rect.width, rect.height);
 
     setClickPosition({ x: canvasCoords.x, y: canvasCoords.y });
     setModalOpen(true);
@@ -129,7 +175,7 @@ export default function HomePage() {
       const rect = container.getBoundingClientRect();
       const viewportCenterX = rect.width / 2;
       const viewportCenterY = rect.height / 2;
-      const canvasCoords = viewportToCanvas(viewportCenterX, viewportCenterY);
+      const canvasCoords = viewportToCanvas(viewportCenterX, viewportCenterY, rect.width, rect.height);
       setClickPosition({ x: canvasCoords.x, y: canvasCoords.y });
     } else {
       setClickPosition({ x: 100, y: 100 });
@@ -291,8 +337,7 @@ export default function HomePage() {
             className={styles.postitsContainer} 
             data-postits-container
             style={{
-              transform: `translate(${transform.translateX}px, ${transform.translateY}px) scale(${transform.scale})`,
-              transformOrigin: '0 0',
+              transform: `translate(calc(-50% + ${transform.translateX}px), calc(-50% + ${transform.translateY}px)) scale(${transform.scale})`,
             }}
           >
             {postits.map((postit) => (

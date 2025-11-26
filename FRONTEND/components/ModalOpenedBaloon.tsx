@@ -170,11 +170,12 @@ export default function ModalOpenedBaloon({ open, onClose, postit }: ModalOpened
       <BaseModal
         open={open}
         onClose={onClose}
-        contentClassName={styles.modalContent}
+        contentClassName={styles.modalContentWhite}
         ariaLabelledBy="details-modal-title"
         hideOverlay={true}
         hideCloseButton={false}
         hideImage={true}
+        svgFillColor="#fff"
       >
         <div className={styles.modalBody}>
           {postit && (

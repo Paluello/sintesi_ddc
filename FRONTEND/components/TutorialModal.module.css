@@ -35,4 +35,5 @@
   object-fit: contain;
   object-position: center;
   display: block;
+  filter: brightness(0) invert(1);
 }

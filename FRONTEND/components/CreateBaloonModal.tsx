@@ -71,6 +71,7 @@ export default function CreateBaloonModal({ open, onClose, onSubmit }: CreateBal
       open={open}
       onClose={handleClose}
       imageSlot={imageSlot}
+      imageClassName={styles.imageArea}
       contentClassName={styles.modalContent}
       ariaLabelledBy={titleId}
       relativeClose={true}

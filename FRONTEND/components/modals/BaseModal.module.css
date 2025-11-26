@@ -148,13 +148,13 @@
 }
 
 .imageArea figcaption {
-  font-size: clamp(14px, 2vw, 18px);
+  font-size: 14px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .imagePlaceholder {
-  font-size: clamp(14px, 2.4vw, 18px);
+  font-size: 14px;
   color: var(--base-modal-image-placeholder-color, rgba(255, 255, 255, 0.8));
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -172,7 +172,7 @@
   align-items: center;
   justify-content: flex-start;
 
-  background: var(--base-modal-content-bg, rgba(5, 5, 5, 0.35));
+  background: var(--base-modal-content-bg, rgba(0, 0, 0, 0.95));
   border-radius: calc(var(--base-modal-safe-radius, 12px) * 0.8);
   box-shadow: var(
     --base-modal-content-shadow,

@@ -22,6 +22,7 @@ interface BaseModalProps {
   surfaceClassName?: string;
   svgPath?: string; // Path opzionale all'SVG da cui caricare la safe area
   relativeClose?: boolean; // Se true, il pulsante di chiusura è relativo al layout
+  svgFillColor?: string; // Colore del fill dell'SVG (default: #000 nero)
 }
 
 const EXIT_ANIMATION_MS = 300;
@@ -59,6 +60,7 @@ export default function BaseModal({
   surfaceClassName,
   svgPath = DEFAULT_MODAL_SVG_PATH, // Usa il path di default se non viene passato
   relativeClose = false,
+  svgFillColor = '#000', // Default nero
 }: BaseModalProps) {
   const [isVisible, setIsVisible] = useState(open);
   const [isClosing, setIsClosing] = useState(false);
@@ -289,7 +291,7 @@ export default function BaseModal({
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden="true"
       >
-        <path d="M219.5,6.1l8.7,271.6-20.9-.2c-57.6-2.6-118-2.3-176.4-4.2-8.8-.3-17.6.6-26.1-2.2,1.5-14.6,0-29.5.8-44.1.1-2-2.5-2.2,1.2-3.3-2.2-2.6-3-8.9-2.8-12.3,3.8-60.7.3-123.1,2.9-184.5.3-7.5-4-8.4,8-10.1,4.6-.7,10.7.2,14.8-.1,41-3.2,83.6-5.8,125.3-8.4,8.8-.5,61.7-6.7,64.6-2.1h0Z" fill="#fff"/>
+        <path d="M219.5,6.1l8.7,271.6-20.9-.2c-57.6-2.6-118-2.3-176.4-4.2-8.8-.3-17.6.6-26.1-2.2,1.5-14.6,0-29.5.8-44.1.1-2-2.5-2.2,1.2-3.3-2.2-2.6-3-8.9-2.8-12.3,3.8-60.7.3-123.1,2.9-184.5.3-7.5-4-8.4,8-10.1,4.6-.7,10.7.2,14.8-.1,41-3.2,83.6-5.8,125.3-8.4,8.8-.5,61.7-6.7,64.6-2.1h0Z" fill={svgFillColor}/>
       </svg>
       <div className={styles.safeArea} style={safeAreaVars} ref={safeAreaRef}>
         {!hideCloseButton && (

@@ -12,6 +12,7 @@ interface UseCanvasTransformReturn {
   zoomIn: () => void;
   zoomOut: () => void;
   resetZoom: () => void;
+  initializeTransform: (containerWidth: number, containerHeight: number) => void;
   handleWheel: (e: WheelEvent, container: HTMLElement) => void;
   startPan: (e: React.MouseEvent | React.TouchEvent) => void;
   isPanning: boolean;
@@ -23,6 +24,8 @@ const MIN_SCALE = 0.3;
 const MAX_SCALE = 2;
 const DEFAULT_SCALE = 1;
 const ZOOM_STEP = 0.1;
+const BOARD_BASE_SIZE = 2000; // Dimensione base della board (2000x2000px)
+const BOARD_MARGIN = 40; // Margine fisso dai bordi (40px su ogni lato)
 
 export function useCanvasTransform(): UseCanvasTransformReturn {
   const [transform, setTransform] = useState<CanvasTransform>({
@@ -41,8 +44,24 @@ export function useCanvasTransform(): UseCanvasTransformReturn {
   }, [transform]);
 
   // Convert viewport coordinates to canvas coordinates
+  // Con il nuovo sistema, il container è centrato con translate(-50%, -50%)
+  // quindi dobbiamo considerare il centro del container come origine
   const viewportToCanvas = useCallback(
-    (x: number, y: number): { x: number; y: number } => {
+    (x: number, y: number, containerWidth?: number, containerHeight?: number): { x: number; y: number } => {
+      if (containerWidth !== undefined && containerHeight !== undefined) {
+        // Il centro del container è a (containerWidth/2, containerHeight/2)
+        const centerX = containerWidth / 2;
+        const centerY = containerHeight / 2;
+        // Coordinate relative al centro
+        const relativeX = x - centerX - transform.translateX;
+        const relativeY = y - centerY - transform.translateY;
+        // Converti in coordinate canvas (il centro della board è 1000, 1000)
+        return {
+          x: BOARD_BASE_SIZE / 2 + relativeX / transform.scale,
+          y: BOARD_BASE_SIZE / 2 + relativeY / transform.scale,
+        };
+      }
+      // Fallback al comportamento precedente
       return {
         x: (x - transform.translateX) / transform.scale,
         y: (y - transform.translateY) / transform.scale,
@@ -53,7 +72,20 @@ export function useCanvasTransform(): UseCanvasTransformReturn {
 
   // Convert canvas coordinates to viewport coordinates
   const canvasToViewport = useCallback(
-    (x: number, y: number): { x: number; y: number } => {
+    (x: number, y: number, containerWidth?: number, containerHeight?: number): { x: number; y: number } => {
+      if (containerWidth !== undefined && containerHeight !== undefined) {
+        // Il centro del container è a (containerWidth/2, containerHeight/2)
+        const centerX = containerWidth / 2;
+        const centerY = containerHeight / 2;
+        // Coordinate relative al centro della board
+        const relativeX = (x - BOARD_BASE_SIZE / 2) * transform.scale;
+        const relativeY = (y - BOARD_BASE_SIZE / 2) * transform.scale;
+        return {
+          x: centerX + relativeX + transform.translateX,
+          y: centerY + relativeY + transform.translateY,
+        };
+      }
+      // Fallback al comportamento precedente
       return {
         x: x * transform.scale + transform.translateX,
         y: y * transform.scale + transform.translateY,
@@ -84,6 +116,28 @@ export function useCanvasTransform(): UseCanvasTransformReturn {
     });
   }, []);
 
+  const initializeTransform = useCallback(
+    (containerWidth: number, containerHeight: number) => {
+      // Calcola lo spazio disponibile considerando i margini fissi
+      const availableWidth = containerWidth - BOARD_MARGIN * 2;
+      const availableHeight = containerHeight - BOARD_MARGIN * 2;
+
+      // Calcola lo zoom iniziale per far entrare la board nell'area disponibile
+      const scaleX = availableWidth / BOARD_BASE_SIZE;
+      const scaleY = availableHeight / BOARD_BASE_SIZE;
+      const initialScale = Math.min(scaleX, scaleY, MAX_SCALE);
+
+      // Con il nuovo sistema CSS, la board è già centrata con translate(-50%, -50%)
+      // Quindi non serve translateX/Y iniziale, solo lo scale
+      setTransform({
+        scale: initialScale,
+        translateX: 0,
+        translateY: 0,
+      });
+    },
+    []
+  );
+
   const handleWheel = useCallback(
     (e: WheelEvent, container: HTMLElement) => {
       // Zoom with Ctrl/Cmd + wheel, or just wheel
@@ -103,14 +157,22 @@ export function useCanvasTransform(): UseCanvasTransformReturn {
         const rect = container.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
+        const containerWidth = rect.width;
+        const containerHeight = rect.height;
 
         // Convert mouse position to canvas coordinates before zoom
-        const canvasX = (mouseX - transform.translateX) / transform.scale;
-        const canvasY = (mouseY - transform.translateY) / transform.scale;
+        const centerX = containerWidth / 2;
+        const centerY = containerHeight / 2;
+        const relativeX = mouseX - centerX - transform.translateX;
+        const relativeY = mouseY - centerY - transform.translateY;
+        const canvasX = BOARD_BASE_SIZE / 2 + relativeX / transform.scale;
+        const canvasY = BOARD_BASE_SIZE / 2 + relativeY / transform.scale;
 
         // Calculate new translate to keep mouse point fixed
-        const newTranslateX = mouseX - canvasX * newScale;
-        const newTranslateY = mouseY - canvasY * newScale;
+        const newRelativeX = (canvasX - BOARD_BASE_SIZE / 2) * newScale;
+        const newRelativeY = (canvasY - BOARD_BASE_SIZE / 2) * newScale;
+        const newTranslateX = mouseX - centerX - newRelativeX;
+        const newTranslateY = mouseY - centerY - newRelativeY;
 
         setTransform({
           scale: newScale,
@@ -189,6 +251,7 @@ export function useCanvasTransform(): UseCanvasTransformReturn {
     zoomIn,
     zoomOut,
     resetZoom,
+    initializeTransform,
     handleWheel,
     startPan,
     isPanning,

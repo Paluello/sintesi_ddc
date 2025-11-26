@@ -1,5 +1,5 @@
 .modalContent {
-  --base-modal-content-bg: rgba(255, 255, 255, 0.92);
+  --base-modal-content-bg: rgba(0, 0, 0, 0.95);
   --base-modal-content-shadow: none;
   --base-modal-content-padding: clamp(28px, 4.5vw, 44px);
   color: var(--color-text-primary);
@@ -11,6 +11,10 @@
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
+}
+
+.imageArea img {
+  filter: brightness(0) invert(1);
 }
 
 .modalBody {
@@ -69,7 +73,7 @@
   -webkit-appearance: none;
   background: transparent;
   position: relative;
-  color: #ffffff;
+  color: var(--color-text-primary);
   overflow: visible;
 }
 
@@ -183,7 +187,7 @@
   top: calc(100% + var(--spacing-xs));
   left: 0;
   right: 0;
-  background: white;
+  background: rgba(0, 0, 0, 0.95);
   border: var(--border-width-medium) solid var(--color-border-light);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);

@@ -45,6 +45,9 @@
   --color-spinner-light: #f3f3f3;
   --color-spinner-primary: #1976d2;
   
+  /* SVG Input Wrapper */
+  --svg-fill-color: #f0f0f0;
+  
   /* Button States */
   --color-button-hover-bg: #e3f2fd;
   --color-button-hover-bg-dark: #bbdefb;
@@ -54,9 +57,7 @@
   /* ===== TYPOGRAPHY ===== */
   
   /* Font Family */
-  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  --font-family: 'Geist Mono', 'Courier New', Courier, monospace;
   
   /* Geist Font Family */
   --font-geist: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -66,19 +67,19 @@
   /* Geist Mono Font Family */
   --font-mono: 'Geist Mono', 'Courier New', Courier, monospace;
   
-  /* Font Sizes - Responsive con clamp() */
-  --font-size-h1: clamp(24px, 5vw, 32px);
-  --font-size-h2: clamp(20px, 4vw, 24px);
-  --font-size-h3: clamp(18px, 3.5vw, 20px);
-  --font-size-body: clamp(13px, 2vw, 16px);
-  --font-size-body-expanded: clamp(16px, 2.5vw, 20px);
-  --font-size-small: clamp(11px, 1.5vw, 14px);
-  --font-size-tiny: clamp(10px, 1vw, 12px);
+  /* Font Sizes - Fissi in pixel (valori mobile) */
+  --font-size-h1: 24px;
+  --font-size-h2: 20px;
+  --font-size-h3: 18px;
+  --font-size-body: 13px;
+  --font-size-body-expanded: 16px;
+  --font-size-small: 11px;
+  --font-size-tiny: 10px;
   
   /* Font Sizes specifici (per casi particolari) */
-  --font-size-title-large: clamp(26px, 5.5vw, 32px);
-  --font-size-title-medium: clamp(20px, 4.5vw, 24px);
-  --font-size-title-small: clamp(18px, 4vw, 22px);
+  --font-size-title-large: 26px;
+  --font-size-title-medium: 20px;
+  --font-size-title-small: 18px;
   --font-size-input: 16px; /* Evita zoom su iOS */
   --font-size-button: 16px;
   
