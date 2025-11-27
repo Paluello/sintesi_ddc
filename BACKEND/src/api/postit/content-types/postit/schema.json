@@ -1,0 +1,51 @@
+{
+  "kind": "collectionType",
+  "collectionName": "postits",
+  "info": {
+    "singularName": "postit",
+    "pluralName": "postits",
+    "displayName": "POSTIT"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "TITOLO": {
+      "type": "string"
+    },
+    "TESTO": {
+      "type": "string"
+    },
+    "COMMENTI": {
+      "type": "string"
+    },
+    "X": {
+      "type": "decimal"
+    },
+    "Y": {
+      "type": "decimal"
+    },
+    "settore": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::settore.settore",
+      "inversedBy": "postits"
+    },
+    "tema": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::tema.tema",
+      "inversedBy": "postits"
+    },
+    "STILE": {
+      "type": "enumeration",
+      "enum": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ]
+    }
+  }
+}

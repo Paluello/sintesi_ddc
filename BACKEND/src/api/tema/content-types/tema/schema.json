@@ -1,0 +1,24 @@
+{
+  "kind": "collectionType",
+  "collectionName": "temi",
+  "info": {
+    "singularName": "tema",
+    "pluralName": "temi",
+    "displayName": "TEMA"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "NOME": {
+      "type": "string"
+    },
+    "postits": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::postit.postit",
+      "mappedBy": "tema"
+    }
+  }
+}

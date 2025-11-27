@@ -37,6 +37,7 @@ export function useCanvasTransform(): UseCanvasTransformReturn {
   const [isPanning, setIsPanning] = useState(false);
   const panStartRef = useRef<{ x: number; y: number; translateX: number; translateY: number } | null>(null);
   const transformRef = useRef(transform);
+  const initialScaleRef = useRef<number | null>(null); // Salva lo scale iniziale
 
   // Keep ref in sync with state
   useEffect(() => {
@@ -95,10 +96,14 @@ export function useCanvasTransform(): UseCanvasTransformReturn {
   );
 
   const zoomIn = useCallback(() => {
-    setTransform((prev) => ({
-      ...prev,
-      scale: Math.min(prev.scale + ZOOM_STEP, MAX_SCALE),
-    }));
+    setTransform((prev) => {
+      // Usa lo scale iniziale come limite massimo, se disponibile
+      const maxScale = initialScaleRef.current ?? MAX_SCALE;
+      return {
+        ...prev,
+        scale: Math.min(prev.scale + ZOOM_STEP, maxScale),
+      };
+    });
   }, []);
 
   const zoomOut = useCallback(() => {
@@ -109,8 +114,10 @@ export function useCanvasTransform(): UseCanvasTransformReturn {
   }, []);
 
   const resetZoom = useCallback(() => {
+    // Resetta allo scale iniziale se disponibile, altrimenti usa DEFAULT_SCALE
+    const resetScale = initialScaleRef.current ?? DEFAULT_SCALE;
     setTransform({
-      scale: DEFAULT_SCALE,
+      scale: resetScale,
       translateX: 0,
       translateY: 0,
     });
@@ -126,6 +133,9 @@ export function useCanvasTransform(): UseCanvasTransformReturn {
       const scaleX = availableWidth / BOARD_BASE_SIZE;
       const scaleY = availableHeight / BOARD_BASE_SIZE;
       const initialScale = Math.min(scaleX, scaleY, MAX_SCALE);
+
+      // Salva lo scale iniziale come limite massimo per lo zoom in
+      initialScaleRef.current = initialScale;
 
       // Con il nuovo sistema CSS, la board è già centrata con translate(-50%, -50%)
       // Quindi non serve translateX/Y iniziale, solo lo scale
@@ -151,7 +161,9 @@ export function useCanvasTransform(): UseCanvasTransformReturn {
         e.stopPropagation();
 
         const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
-        const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, transform.scale + delta));
+        // Usa lo scale iniziale come limite massimo, se disponibile
+        const maxScale = initialScaleRef.current ?? MAX_SCALE;
+        const newScale = Math.max(MIN_SCALE, Math.min(maxScale, transform.scale + delta));
 
         // Zoom towards mouse position
         const rect = container.getBoundingClientRect();

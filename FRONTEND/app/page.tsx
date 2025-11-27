@@ -332,6 +332,15 @@ export default function HomePage() {
 
       {!loading && (
         <>
+          {/* Titolo mobile - fisso al top */}
+          <div className={styles.titleMobile}>
+            <img 
+              src="/images/testo_titolo.svg" 
+              alt="Titolo" 
+              className={styles.titleImage}
+            />
+          </div>
+
           <div 
             ref={canvasRef}
             className={styles.postitsContainer} 
@@ -340,6 +349,15 @@ export default function HomePage() {
               transform: `translate(calc(-50% + ${transform.translateX}px), calc(-50% + ${transform.translateY}px)) scale(${transform.scale})`,
             }}
           >
+            {/* Titolo desktop - assoluto sullo sfondo della board */}
+            <div className={styles.titleDesktop}>
+              <img 
+                src="/images/testo_titolo.svg" 
+                alt="Titolo" 
+                className={styles.titleImage}
+              />
+            </div>
+
             {postits.map((postit) => (
               <Postit
                 key={postit.id}

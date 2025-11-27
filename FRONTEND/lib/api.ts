@@ -298,8 +298,14 @@ export async function getCommentsForPostit(postitId: number | string): Promise<C
   // Il plugin comments espone l'endpoint: GET /api/comments/api::postit.postit:{documentId}
   // L'interceptor aggiunge automaticamente il token se necessario
   // Returns hierarchical structure directly (array, not wrapped in data)
+  // Passa pagination[limit] per recuperare tutti i commenti (fino al maxLimit di 100)
   const response = await api.get<Comment[]>(
-    `/api/comments/api::postit.postit:${postitId}`
+    `/api/comments/api::postit.postit:${postitId}`,
+    {
+      params: {
+        'pagination[limit]': 100, // Usa il maxLimit per recuperare tutti i commenti possibili
+      },
+    }
   );
   // Plugin returns array directly for hierarchical structure
   return Array.isArray(response.data) ? response.data : [];

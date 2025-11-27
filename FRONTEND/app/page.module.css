@@ -100,6 +100,38 @@
   will-change: transform;
 }
 
+/* Titolo mobile - fisso al top */
+.titleMobile {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-index-expanded);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-lg);
+  pointer-events: none;
+}
+
+.titleMobile .titleImage {
+  max-width: 60%;
+  height: auto;
+}
+
+/* Titolo desktop - nascosto su mobile */
+.titleDesktop {
+  display: none;
+}
+
+.titleImage {
+  width: auto;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
 /* Tablet - 480px e oltre */
 @media (min-width: 480px) {
   .error {
@@ -121,5 +153,30 @@
   .error {
     top: 20px;
     padding: var(--spacing-lg) var(--gap-2xl);
+  }
+
+  /* Nascondi titolo mobile su desktop */
+  .titleMobile {
+    display: none;
+  }
+
+  /* Mostra titolo desktop assoluto sullo sfondo della board */
+  /* Posizionato per essere a 1/5 dall'alto dello schermo quando la board è centrata */
+  .titleDesktop {
+    display: flex;
+    position: absolute;
+    top: calc(1000px - 4 * 100vh / 10);
+    left: 50%;
+    transform: translateX(-50%);
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    z-index: var(--z-index-base);
+    pointer-events: none;
+  }
+
+  .titleDesktop .titleImage {
+    max-width: 800px;
+    height: auto;
   }
 }
