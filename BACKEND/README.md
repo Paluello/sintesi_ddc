@@ -2,6 +2,49 @@
 
 Strapi comes with a full featured [Command Line Interface](https://docs.strapi.io/dev-docs/cli) (CLI) which lets you scaffold and manage your project in seconds.
 
+## ⚙️ Configurazione iniziale
+
+Prima di avviare il progetto, è necessario creare un file `.env` con le variabili d'ambiente necessarie.
+
+### Opzione 1: Generazione automatica (consigliata)
+
+Esegui lo script di generazione automatica:
+
+```bash
+./generate-env.sh
+```
+
+Questo script creerà automaticamente un file `.env` con tutti i secret necessari generati in modo sicuro.
+
+### Opzione 2: Creazione manuale
+
+1. Copia il file di esempio:
+```bash
+cp .env.example .env
+```
+
+2. Genera i secret necessari usando `openssl`:
+```bash
+# Genera ADMIN_JWT_SECRET
+openssl rand -base64 32
+
+# Genera API_TOKEN_SALT
+openssl rand -base64 32
+
+# Genera TRANSFER_TOKEN_SALT
+openssl rand -base64 32
+
+# Genera ENCRYPTION_KEY
+openssl rand -base64 32
+
+# Genera APP_KEYS (ripeti 4 volte e separa con virgola)
+openssl rand -base64 32
+```
+
+3. Apri il file `.env` e inserisci i valori generati.
+
+**⚠️ IMPORTANTE**: Il file `.env` contiene informazioni sensibili e non deve essere committato nel repository. È già incluso nel `.gitignore`.
+
 ### `develop`
 
 Start your Strapi application with autoReload enabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-develop)
