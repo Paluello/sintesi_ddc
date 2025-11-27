@@ -1,6 +1,6 @@
 'use client';
 
-import IconButton from './IconButton';
+import IconButton from '../../atoms/IconButton/IconButton';
 import styles from './Toolbar.module.css';
 
 interface ToolbarProps {

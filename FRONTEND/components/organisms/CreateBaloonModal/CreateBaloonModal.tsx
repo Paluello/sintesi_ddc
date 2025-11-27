@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { PostitCreateData, PostitStyle } from '@/types/postit';
-import BaseModal from './modals/BaseModal';
-import Input from './Input';
-import InputWithSubmitButton from './InputWithSubmitButton';
+import BaseModal from '../BaseModal/BaseModal';
+import Input from '../../atoms/Input/Input';
+import InputWithSubmitButton from '../../molecules/InputWithSubmitButton/InputWithSubmitButton';
 import styles from './CreateBaloonModal.module.css';
 
 interface CreateBaloonModalProps {

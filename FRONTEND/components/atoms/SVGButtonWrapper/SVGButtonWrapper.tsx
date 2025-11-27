@@ -11,7 +11,7 @@ interface SVGButtonWrapperProps {
 
 export default function SVGButtonWrapper({ children, className = '', fillColor }: SVGButtonWrapperProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLElement>(null);
+  const buttonRef = useRef<HTMLElement | null>(null);
   const [svgDimensions, setSvgDimensions] = useState({ width: 0, height: 0 });
   const [svgPosition, setSvgPosition] = useState({ top: 0, left: 0 });
 
@@ -90,7 +90,7 @@ export default function SVGButtonWrapper({ children, className = '', fillColor }
     return React.cloneElement(children as React.ReactElement, {
       ref: (node: HTMLElement | null) => {
         buttonRef.current = node;
-        const originalRef = (children as React.ReactElement).ref;
+        const originalRef = (children as any).ref;
         if (typeof originalRef === 'function') {
           originalRef(node);
         } else if (originalRef && 'current' in originalRef) {

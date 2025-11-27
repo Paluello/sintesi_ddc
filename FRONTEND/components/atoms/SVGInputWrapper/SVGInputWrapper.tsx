@@ -55,14 +55,14 @@ export default function SVGInputWrapper({
   // Calcola le variabili CSS per il safe area (come in Postit.tsx)
   const safeAreaVars: CSSProperties = useMemo(() => {
     if (!svgData) {
-      return {};
+      return {} as CSSProperties;
     }
     return {
       '--input-safe-inset-top': `${svgData.safeArea.top}%`,
       '--input-safe-inset-right': `${svgData.safeArea.right}%`,
       '--input-safe-inset-bottom': `${svgData.safeArea.bottom}%`,
       '--input-safe-inset-left': `${svgData.safeArea.left}%`,
-    };
+    } as CSSProperties;
   }, [svgData]);
 
   const { path, viewBox } = svgData || { 

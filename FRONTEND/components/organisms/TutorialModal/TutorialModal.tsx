@@ -1,6 +1,6 @@
 'use client';
 
-import BaseModal from './modals/BaseModal';
+import BaseModal from '../BaseModal/BaseModal';
 import styles from './TutorialModal.module.css';
 
 interface TutorialModalProps {

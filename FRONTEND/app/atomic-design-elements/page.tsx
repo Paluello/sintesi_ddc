@@ -1,6 +1,6 @@
 'use client';
 
-import CenteredButton from '@/components/CenteredButton';
+import CenteredButton from '@/components/atoms/CenteredButton/CenteredButton';
 import styles from './page.module.css';
 
 export default function AtomicDesignElementsPage() {

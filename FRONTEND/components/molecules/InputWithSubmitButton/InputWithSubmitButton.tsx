@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Input from './Input';
+import Input from '../../atoms/Input/Input';
 import styles from './InputWithSubmitButton.module.css';
 
 interface InputWithSubmitButtonProps {

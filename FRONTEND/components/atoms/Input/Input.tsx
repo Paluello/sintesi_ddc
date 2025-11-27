@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import SVGInputWrapper from './SVGInputWrapper';
+import SVGInputWrapper from '../SVGInputWrapper/SVGInputWrapper';
 import styles from './Input.module.css';
 
 interface InputProps {

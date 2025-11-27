@@ -94,7 +94,7 @@ export default function BaseModal({
         setSafeArea(loadedSafeAreas[svgPath]);
       } else {
         // Se c'è già un caricamento in corso per questo path, aspetta quello
-        if (loadingPromises[svgPath]) {
+        if (svgPath in loadingPromises) {
           loadingPromises[svgPath].then((area) => {
             if (area) {
               loadedSafeAreas[svgPath] = area;
@@ -133,7 +133,7 @@ export default function BaseModal({
         setSvgPathData(loadedSvgPaths[svgPath]);
       } else {
         // Se c'è già un caricamento in corso per questo path, aspetta quello
-        if (loadingSvgPathPromises[svgPath]) {
+        if (svgPath in loadingSvgPathPromises) {
           loadingSvgPathPromises[svgPath].then((data) => {
             if (data) {
               loadedSvgPaths[svgPath] = data;
@@ -300,7 +300,7 @@ export default function BaseModal({
       '--base-modal-safe-inset-right': `${resolvedSafeArea.right}%`,
       '--base-modal-safe-inset-left': `${resolvedSafeArea.left}%`,
       ...safeAreaStyle,
-    };
+    } as CSSProperties;
     // padding-bottom sarà calcolato dinamicamente nel useEffect
     return baseVars;
   }, [resolvedSafeArea, safeAreaStyle]);

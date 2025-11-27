@@ -20,7 +20,7 @@ const DEFAULT_VIEWBOX = { width: 240, height: 120, x: 0, y: 0 };
 const geistMonoFont = localFont({
   src: [
     {
-      path: '../font/mono/GeistMono-Bold.otf',
+      path: '../../../font/mono/GeistMono-Bold.otf',
       weight: '700',
       style: 'normal',
     },
@@ -181,7 +181,7 @@ function Postit({
     '--postit-safe-inset-left': `${safeArea.left}%`,
     '--postit-inner-padding': '0px',
     '--postit-safe-radius': '0px',
-  }), [safeArea]);
+  } as CSSProperties), [safeArea]);
 
   // Sync position with prop changes
   // Non sincronizzare se stiamo aspettando la risposta dell'API dopo un drag
@@ -232,7 +232,7 @@ function Postit({
     // ma la posizione pending verrà aggiornata e applicata al prossimo frame
   }, []);
 
-  const handleMouseDown = (e: React.MouseEvent<SVGSVGElement>) => {
+  const handleMouseDown = (e: React.MouseEvent<SVGPathElement>) => {
     if (e.button !== 0) return; // Only handle left mouse button
     
     wasClickedRef.current = true;
@@ -420,7 +420,7 @@ function Postit({
     document.addEventListener('mouseup', handleMouseUp);
   };
 
-  const handleTouchStart = (e: React.TouchEvent<SVGSVGElement>) => {
+  const handleTouchStart = (e: React.TouchEvent<SVGPathElement>) => {
     if (e.touches.length !== 1) return; // Solo un dito
     
     wasClickedRef.current = true;
@@ -650,7 +650,7 @@ function Postit({
         maskMode: 'alpha',
         pointerEvents: 'none', // Disabilita gli eventi sul container principale
         ...safeAreaVars,
-      }}
+      } as CSSProperties}
       data-postit
     >
       {/* Wrapper per allineare il contenuto all'immagine di sfondo (che è contain) */}

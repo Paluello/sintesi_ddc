@@ -3,14 +3,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { usePostits } from '@/hooks/usePostits';
 import { useCanvasTransform } from '@/hooks/useCanvasTransform';
-import CreateBaloonModal from '@/components/CreateBaloonModal';
-import ModalOpenedBaloon from '@/components/ModalOpenedBaloon';
-import TutorialModal from '@/components/TutorialModal';
-import Postit from '@/components/Postit';
-import Toolbar from '@/components/Toolbar';
+import CreateBaloonModal from '@/components/organisms/CreateBaloonModal/CreateBaloonModal';
+import ModalOpenedBaloon from '@/components/organisms/ModalOpenedBaloon/ModalOpenedBaloon';
+import TutorialModal from '@/components/organisms/TutorialModal/TutorialModal';
+import Postit from '@/components/organisms/Postit/Postit';
+import Toolbar from '@/components/molecules/Toolbar/Toolbar';
 import { Postit as PostitType, PostitCreateData } from '@/types/postit';
 import { ensureAnonymousAuth } from '@/lib/auth';
-import { TUTORIAL_STORAGE_KEY } from '@/components/tutorialConfig';
+import { TUTORIAL_STORAGE_KEY } from '@/components/organisms/TutorialModal/tutorialConfig';
 import styles from './page.module.css';
 
 export default function HomePage() {
@@ -155,7 +155,7 @@ export default function HomePage() {
     const viewportCenterY = rect.height / 2;
     
     // Converti il centro della viewport in coordinate canvas
-    const canvasCoords = viewportToCanvas(viewportCenterX, viewportCenterY, rect.width, rect.height);
+    const canvasCoords = viewportToCanvas(viewportCenterX, viewportCenterY);
 
     setClickPosition({ x: canvasCoords.x, y: canvasCoords.y });
     setModalOpen(true);
@@ -175,7 +175,7 @@ export default function HomePage() {
       const rect = container.getBoundingClientRect();
       const viewportCenterX = rect.width / 2;
       const viewportCenterY = rect.height / 2;
-      const canvasCoords = viewportToCanvas(viewportCenterX, viewportCenterY, rect.width, rect.height);
+      const canvasCoords = viewportToCanvas(viewportCenterX, viewportCenterY);
       setClickPosition({ x: canvasCoords.x, y: canvasCoords.y });
     } else {
       setClickPosition({ x: 100, y: 100 });

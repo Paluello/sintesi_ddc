@@ -3,8 +3,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useComments } from '@/hooks/useComments';
 import { Postit } from '@/types/postit';
-import BaseModal from './modals/BaseModal';
-import InputWithSubmitButton from './InputWithSubmitButton';
+import BaseModal from '../BaseModal/BaseModal';
+import InputWithSubmitButton from '../../molecules/InputWithSubmitButton/InputWithSubmitButton';
 import styles from './ModalOpenedBaloon.module.css';
 
 interface ModalOpenedBaloonProps {
