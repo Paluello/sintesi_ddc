@@ -6,7 +6,7 @@ import { Settore } from '@/types/settore';
 import { Tema } from '@/types/tema';
 import { StrapiCollectionResponse, StrapiResponse } from '@/types/api';
 
-const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://100.124.181.83:1337';
+const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
 
 // Crea istanza axios con configurazione base
 const createApiClient = (): AxiosInstance => {
