@@ -4,29 +4,39 @@
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  /* Overflow hidden to crop the parts of SVG viewbox that are empty space outside the polygon, 
-     since we scaled the polygon to fill the container */
+}
+
+.innerWrapper {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
   overflow: hidden;
 }
 
 .svgOverlay {
   position: absolute;
-  /* 
-     Calculated to map the polygon bounds to the container bounds.
-     Polygon bounds in ViewBox (36.5 x 17.4):
-     X: 1.6 to 34.9 (Width 33.3) -> Scale X: 36.5/33.3 ~= 109.6%
-     Y: 0.3 to 17.1 (Height 16.8) -> Scale Y: 17.4/16.8 ~= 103.6%
-     Offset X: -1.6 / 33.3 ~= -4.8%
-     Offset Y: -0.3 / 16.8 ~= -1.8%
-  */
-  width: 109.6%;
-  height: 103.6%;
-  left: -4.8%;
-  top: -1.8%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   z-index: 0;
   pointer-events: none;
+}
+
+.inputSafeArea {
+  position: absolute;
+  top: var(--input-safe-inset-top);
+  right: var(--input-safe-inset-right);
+  bottom: var(--input-safe-inset-bottom);
+  left: var(--input-safe-inset-left);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+  z-index: 1;
+  /* Non pointer-events: none perché gli input devono essere interattivi */
 }
 
 .inputContainer {
@@ -35,14 +45,13 @@
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
-  z-index: 1;
-  flex: 1;
   display: flex;
   flex-direction: column;
+  height: 100%;
+  justify-content: center;
 }
 
-/* Ensure children (inputs) fill the container */
+/* Ensure children (inputs) fill the container width but adapt to their natural height */
 .inputContainer > * {
   width: 100%;
-  height: 100%;
 }

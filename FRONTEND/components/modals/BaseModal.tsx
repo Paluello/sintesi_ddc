@@ -2,7 +2,7 @@
 
 import { CSSProperties, ReactNode, useEffect, useState, useMemo, useRef } from 'react';
 import styles from './BaseModal.module.css';
-import { loadSafeAreaFromSVG, extractSafeAreaFromSVGString, type SafeArea } from '@/lib/svgSafeArea';
+import { loadSafeAreaFromSVG, extractSafeAreaFromSVGString, loadPathFromSVG, type SafeArea, type ViewBox } from '@/lib/svgSafeArea';
 
 interface BaseModalProps {
   open: boolean;
@@ -23,6 +23,8 @@ interface BaseModalProps {
   svgPath?: string; // Path opzionale all'SVG da cui caricare la safe area
   relativeClose?: boolean; // Se true, il pulsante di chiusura è relativo al layout
   svgFillColor?: string; // Colore del fill dell'SVG (default: #000 nero)
+  maxWidth?: string; // Larghezza massima del modal (default: 'min(92vw, 560px)')
+  overlayAlignItems?: 'center' | 'flex-start' | 'flex-end'; // Allineamento verticale dell'overlay
 }
 
 const EXIT_ANIMATION_MS = 300;
@@ -41,6 +43,16 @@ const FALLBACK_SAFE_AREA: SafeArea = {
 // Cache globale per le safe areas caricate (condivisa tra tutte le istanze)
 let loadedSafeAreas: Record<string, SafeArea> = {};
 let loadingPromises: Record<string, Promise<SafeArea | null>> = {};
+
+// Cache globale per i path SVG caricati
+let loadedSvgPaths: Record<string, { path: string; viewBox: ViewBox }> = {};
+let loadingSvgPathPromises: Record<string, Promise<{ path: string; viewBox: ViewBox } | null>> = {};
+
+// SVG di fallback (quello hardcoded originale)
+const FALLBACK_SVG = {
+  path: 'M219.5,6.1l8.7,271.6-20.9-.2c-57.6-2.6-118-2.3-176.4-4.2-8.8-.3-17.6.6-26.1-2.2,1.5-14.6,0-29.5.8-44.1.1-2-2.5-2.2,1.2-3.3-2.2-2.6-3-8.9-2.8-12.3,3.8-60.7.3-123.1,2.9-184.5.3-7.5-4-8.4,8-10.1,4.6-.7,10.7.2,14.8-.1,41-3.2,83.6-5.8,125.3-8.4,8.8-.5,61.7-6.7,64.6-2.1h0Z',
+  viewBox: { x: 0, y: 0, width: 231.1, height: 291.6 },
+};
 
 export default function BaseModal({
   open,
@@ -61,62 +73,104 @@ export default function BaseModal({
   svgPath = DEFAULT_MODAL_SVG_PATH, // Usa il path di default se non viene passato
   relativeClose = false,
   svgFillColor = '#000', // Default nero
+  maxWidth = 'min(92vw, 560px)', // Default
+  overlayAlignItems = 'center', // Default centrato
 }: BaseModalProps) {
   const [isVisible, setIsVisible] = useState(open);
   const [isClosing, setIsClosing] = useState(false);
   // Inizializza sempre con fallback, poi carica nel useEffect
   const [safeArea, setSafeArea] = useState<SafeArea>(FALLBACK_SAFE_AREA);
+  const [svgPathData, setSvgPathData] = useState<{ path: string; viewBox: ViewBox }>(FALLBACK_SVG);
   const safeAreaRef = useRef<HTMLDivElement>(null);
   const modalSurfaceRef = useRef<HTMLDivElement>(null);
 
-  // Carica la safe area dall'SVG (usa sempre il path, anche quello di default)
+  // Carica la safe area e il path SVG dall'SVG (usa sempre il path, anche quello di default)
   useEffect(() => {
     if (svgPath) {
-      // Se c'è svgPath, carica da quel file
+      // Carica la safe area
       // Se è già in cache, usa quella
       if (loadedSafeAreas[svgPath]) {
         console.log('BaseModal: Safe area dalla cache per', svgPath, loadedSafeAreas[svgPath]);
         setSafeArea(loadedSafeAreas[svgPath]);
-        return;
-      }
-
-      // Se c'è già un caricamento in corso per questo path, aspetta quello
-      if (loadingPromises[svgPath]) {
-        loadingPromises[svgPath].then((area) => {
-          if (area) {
-            loadedSafeAreas[svgPath] = area;
-            setSafeArea(area);
-          } else {
+      } else {
+        // Se c'è già un caricamento in corso per questo path, aspetta quello
+        if (loadingPromises[svgPath]) {
+          loadingPromises[svgPath].then((area) => {
+            if (area) {
+              loadedSafeAreas[svgPath] = area;
+              setSafeArea(area);
+            } else {
+              setSafeArea(FALLBACK_SAFE_AREA);
+            }
+          }).catch(() => {
             setSafeArea(FALLBACK_SAFE_AREA);
-          }
-        }).catch(() => {
-          setSafeArea(FALLBACK_SAFE_AREA);
-        });
-        return;
+          });
+        } else {
+          // Altrimenti, inizia il caricamento
+          loadingPromises[svgPath] = loadSafeAreaFromSVG(svgPath);
+          loadingPromises[svgPath].then((area) => {
+            if (area) {
+              loadedSafeAreas[svgPath] = area;
+              setSafeArea(area);
+              console.log('BaseModal: Safe area caricata da', svgPath, area);
+            } else {
+              console.warn('BaseModal: Safe area non trovata in', svgPath, ', uso fallback');
+              setSafeArea(FALLBACK_SAFE_AREA);
+            }
+            delete loadingPromises[svgPath];
+          }).catch((error) => {
+            console.error('BaseModal: Errore nel caricamento della safe area da', svgPath, error);
+            setSafeArea(FALLBACK_SAFE_AREA);
+            delete loadingPromises[svgPath];
+          });
+        }
       }
 
-      // Altrimenti, inizia il caricamento
-      loadingPromises[svgPath] = loadSafeAreaFromSVG(svgPath);
-      loadingPromises[svgPath].then((area) => {
-        if (area) {
-          loadedSafeAreas[svgPath] = area;
-          setSafeArea(area);
-          console.log('BaseModal: Safe area caricata da', svgPath, area);
+      // Carica il path SVG per lo sfondo
+      // Se è già in cache, usa quello
+      if (loadedSvgPaths[svgPath]) {
+        console.log('BaseModal: SVG path dalla cache per', svgPath);
+        setSvgPathData(loadedSvgPaths[svgPath]);
+      } else {
+        // Se c'è già un caricamento in corso per questo path, aspetta quello
+        if (loadingSvgPathPromises[svgPath]) {
+          loadingSvgPathPromises[svgPath].then((data) => {
+            if (data) {
+              loadedSvgPaths[svgPath] = data;
+              setSvgPathData(data);
+            } else {
+              console.warn('BaseModal: SVG path non trovato in', svgPath, ', uso fallback');
+              setSvgPathData(FALLBACK_SVG);
+            }
+          }).catch(() => {
+            setSvgPathData(FALLBACK_SVG);
+          });
         } else {
-          console.warn('BaseModal: Safe area non trovata in', svgPath, ', uso fallback');
-          setSafeArea(FALLBACK_SAFE_AREA);
+          // Altrimenti, inizia il caricamento
+          loadingSvgPathPromises[svgPath] = loadPathFromSVG(svgPath);
+          loadingSvgPathPromises[svgPath].then((data) => {
+            if (data) {
+              loadedSvgPaths[svgPath] = data;
+              setSvgPathData(data);
+              console.log('BaseModal: SVG path caricato da', svgPath);
+            } else {
+              console.warn('BaseModal: SVG path non trovato in', svgPath, ', uso fallback');
+              setSvgPathData(FALLBACK_SVG);
+            }
+            delete loadingSvgPathPromises[svgPath];
+          }).catch((error) => {
+            console.error('BaseModal: Errore nel caricamento del path SVG da', svgPath, error);
+            setSvgPathData(FALLBACK_SVG);
+            delete loadingSvgPathPromises[svgPath];
+          });
         }
-        delete loadingPromises[svgPath];
-      }).catch((error) => {
-        console.error('BaseModal: Errore nel caricamento della safe area da', svgPath, error);
-        setSafeArea(FALLBACK_SAFE_AREA);
-        delete loadingPromises[svgPath];
-      });
+      }
       return;
     }
 
     // Se non c'è svgPath (non dovrebbe mai succedere perché abbiamo un default), usa fallback
     setSafeArea(FALLBACK_SAFE_AREA);
+    setSvgPathData(FALLBACK_SVG);
   }, [svgPath]);
 
   useEffect(() => {
@@ -199,11 +253,7 @@ export default function BaseModal({
       // Imposta l'altezza del modalSurface
       modalSurfaceElement.style.height = `${Math.max(calculatedHeight, 200)}px`;
       
-      // Calcola e imposta il padding-bottom della safe area in pixel
-      // (perché CSS padding-bottom% è relativo alla larghezza, non all'altezza)
-      const modalHeight = modalSurfaceElement.offsetHeight;
-      const paddingBottomPx = (modalHeight * safeArea.bottom) / 100;
-      safeAreaElement.style.paddingBottom = `${paddingBottomPx}px`;
+      // Padding-bottom rimosso - non viene più calcolato dinamicamente
     };
 
     // Aggiorna immediatamente dopo un breve delay per permettere il rendering
@@ -283,15 +333,15 @@ export default function BaseModal({
     .join(' ');
 
   const modalContent = (
-    <div className={modalClasses} ref={modalSurfaceRef}>
+    <div className={modalClasses} ref={modalSurfaceRef} style={{ width: maxWidth }}>
       <svg
         className={styles.modalSvg}
-        viewBox="0 0 231.1 291.6"
+        viewBox={`${svgPathData.viewBox.x} ${svgPathData.viewBox.y} ${svgPathData.viewBox.width} ${svgPathData.viewBox.height}`}
         preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden="true"
       >
-        <path d="M219.5,6.1l8.7,271.6-20.9-.2c-57.6-2.6-118-2.3-176.4-4.2-8.8-.3-17.6.6-26.1-2.2,1.5-14.6,0-29.5.8-44.1.1-2-2.5-2.2,1.2-3.3-2.2-2.6-3-8.9-2.8-12.3,3.8-60.7.3-123.1,2.9-184.5.3-7.5-4-8.4,8-10.1,4.6-.7,10.7.2,14.8-.1,41-3.2,83.6-5.8,125.3-8.4,8.8-.5,61.7-6.7,64.6-2.1h0Z" fill={svgFillColor}/>
+        <path d={svgPathData.path} fill={svgFillColor}/>
       </svg>
       <div className={styles.safeArea} style={safeAreaVars} ref={safeAreaRef}>
         {!hideCloseButton && (
@@ -331,6 +381,7 @@ export default function BaseModal({
       aria-modal="true"
       aria-labelledby={ariaLabelledBy}
       aria-describedby={ariaDescribedBy}
+      style={{ alignItems: overlayAlignItems }}
     >
       <div className={wrapperClasses}>
         {modalContent}

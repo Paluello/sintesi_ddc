@@ -11,7 +11,7 @@
   padding: clamp(var(--spacing-lg, 16px), 5vw, var(--spacing-5xl, 48px));
   padding-top: clamp(60px, 8vw, 80px);
   overflow-y: auto;
-  gap: var(--spacing-3xl);
+  gap: -10px;
 }
 
 .modalsContainerOpening {
@@ -116,7 +116,7 @@
 }
 
 .commentsImageArea {
-  max-width: 120px;
+  max-width: 180px;
 }
 
 .commentsImageArea img {
@@ -229,79 +229,5 @@
   align-items: flex-end;
   gap: var(--spacing-lg);
   width: 100%;
-}
-
-.textarea {
-  padding: var(--spacing-xl);
-  min-height: 80px;
-  border: none;
-  border-radius: 0;
-  font-size: var(--font-size-input);
-  font-family: inherit;
-  transition: opacity var(--transition-normal);
-  resize: vertical;
-  flex: 1;
-  min-width: 0;
-  box-sizing: border-box;
-  appearance: none;
-  -webkit-appearance: none;
-  background: transparent;
-  position: relative;
-  color: var(--color-text-primary);
-  overflow: visible;
-  pointer-events: auto;
-  z-index: 10;
-}
-
-.textarea::placeholder {
-  color: var(--color-text-secondary);
-  opacity: 1;
-}
-
-.textarea:focus {
-  outline: none;
-  opacity: 0.95;
-  background: transparent;
-}
-
-.textarea:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.submitButton {
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform var(--transition-normal);
-  width: 56px;
-  height: 56px;
-  flex-shrink: 0;
-  align-self: flex-end;
-}
-
-.submitButton:hover:not(:disabled) {
-  transform: scale(1.1);
-}
-
-.submitButton:active:not(:disabled) {
-  transform: scale(0.95);
-}
-
-.submitButton:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.submitButtonIcon {
-  display: block;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
 }
 

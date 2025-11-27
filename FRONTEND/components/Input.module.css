@@ -1,0 +1,52 @@
+.input {
+  padding: var(--spacing-xl);
+  min-height: 48px;
+  border: none;
+  border-radius: 0;
+  font-size: var(--font-size-input);
+  font-family: inherit;
+  transition: opacity var(--transition-normal);
+  resize: vertical;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  position: relative;
+  color: #ffffff;
+  overflow: visible;
+  pointer-events: auto;
+  z-index: 10;
+}
+
+.input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+  opacity: 1;
+}
+
+.input:focus {
+  outline: none;
+  opacity: 0.95;
+  background: transparent;
+}
+
+.input:focus::placeholder {
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.textarea {
+  min-height: 80px;
+}
+
+.large.textarea {
+  min-height: 120px;
+}
+

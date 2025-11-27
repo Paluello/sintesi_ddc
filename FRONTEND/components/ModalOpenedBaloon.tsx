@@ -1,11 +1,10 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import Image from 'next/image';
 import { useComments } from '@/hooks/useComments';
 import { Postit } from '@/types/postit';
 import BaseModal from './modals/BaseModal';
-import SVGInputWrapper from './SVGInputWrapper';
+import InputWithSubmitButton from './InputWithSubmitButton';
 import styles from './ModalOpenedBaloon.module.css';
 
 interface ModalOpenedBaloonProps {
@@ -175,6 +174,7 @@ export default function ModalOpenedBaloon({ open, onClose, postit }: ModalOpened
         hideOverlay={true}
         hideCloseButton={false}
         hideImage={true}
+        svgPath="/images/commenti/baloon_lettura.svg"
         svgFillColor="#fff"
       >
         <div className={styles.modalBody}>
@@ -190,16 +190,18 @@ export default function ModalOpenedBaloon({ open, onClose, postit }: ModalOpened
       </BaseModal>
 
       {/* Secondo modale: Commenti */}
-      <BaseModal
-        open={open}
-        onClose={onClose}
-        imageSlot={commentsImageSlot}
-        imageClassName={styles.commentsImageArea}
-        contentClassName={styles.modalContent}
-        ariaLabelledBy="comments-modal-title"
-        hideOverlay={true}
-        hideCloseButton={true}
-      >
+      <div style={{ marginTop: -30, zIndex: -1 }}>
+        <BaseModal
+          open={open}
+          onClose={onClose}
+          imageSlot={commentsImageSlot}
+          imageClassName={styles.commentsImageArea}
+          contentClassName={styles.modalContent}
+          ariaLabelledBy="comments-modal-title"
+          hideOverlay={true}
+          hideCloseButton={true}
+          svgPath="/images/commenti/contenitore_commenti.svg"
+        >
         <div className={styles.modalBody}>          
           {loading && (
             <div className={styles.loading}>
@@ -224,35 +226,21 @@ export default function ModalOpenedBaloon({ open, onClose, postit }: ModalOpened
           )}
 
           <div className={styles.commentForm}>
-            <div className={styles.formRow}>
-              <SVGInputWrapper>
-                <textarea
-                  className={styles.textarea}
-                  placeholder="Aggiungi un commento"
-                  value={commentText}
-                  onChange={(e) => setCommentText(e.target.value)}
-                  disabled={submitting || !postit}
-                />
-              </SVGInputWrapper>
-              <button
-                className={styles.submitButton}
-                onClick={handleSubmit}
-                disabled={submitting || !commentText.trim() || !postit}
-                aria-label={submitting ? 'Invio in corso...' : 'Commenta'}
-                title={submitting ? 'Invio...' : 'Commenta'}
-              >
-                <Image
-                  src="/images/tasti/butt_send.svg"
-                  alt="Commenta"
-                  width={56}
-                  height={56}
-                  className={styles.submitButtonIcon}
-                />
-              </button>
-            </div>
+            <InputWithSubmitButton
+              value={commentText}
+              onChange={setCommentText}
+              onSubmit={handleSubmit}
+              canSubmit={!!commentText.trim() && !!postit}
+              disabled={!postit}
+              loading={submitting}
+              placeholder="Aggiungi un commento"
+              multiline={true}
+              buttonAriaLabel={submitting ? 'Invio in corso...' : 'Commenta'}
+            />
           </div>
         </div>
       </BaseModal>
+      </div>
     </div>
   );
 }

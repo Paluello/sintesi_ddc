@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { PostitCreateData, PostitStyle } from '@/types/postit';
 import BaseModal from './modals/BaseModal';
-import SVGInputWrapper from './SVGInputWrapper';
-import SVGButtonWrapper from './SVGButtonWrapper';
+import Input from './Input';
+import InputWithSubmitButton from './InputWithSubmitButton';
 import styles from './CreateBaloonModal.module.css';
 
 interface CreateBaloonModalProps {
@@ -75,49 +75,37 @@ export default function CreateBaloonModal({ open, onClose, onSubmit }: CreateBal
       contentClassName={styles.modalContent}
       ariaLabelledBy={titleId}
       relativeClose={true}
+      svgPath="/images/rettangoli/rect_crea.svg"
     >
       <div className={styles.modalBody}>
 
         <div className={styles.form}>
           <div className={styles.field}>
-            <SVGInputWrapper>
-              <input
-                id="titolo"
-                type="text"
-                className={styles.input}
-                value={titolo}
-                onChange={(e) => setTitolo(e.target.value)}
-                disabled={loading}
-                autoFocus
-                required
-                placeholder="Dai un titolo al tuo racconto"
-              />
-            </SVGInputWrapper>
+            <Input
+              id="titolo"
+              value={titolo}
+              onChange={setTitolo}
+              variant="inline"
+              disabled={loading}
+              autoFocus
+              required
+              placeholder="Dai un titolo al tuo racconto"
+            />
           </div>
           <div className={styles.field}>
-            <SVGInputWrapper>
-              <textarea
-                id="testo"
-                className={`${styles.input} ${styles.textarea}`}
-                value={testo}
-                onChange={(e) => setTesto(e.target.value)}
-                disabled={loading}
-                required
-                placeholder="Racconta la tua storia"
-              />
-            </SVGInputWrapper>
+            <InputWithSubmitButton
+              value={testo}
+              onChange={setTesto}
+              onSubmit={handleSubmit}
+              canSubmit={!!titolo.trim() && !!testo.trim()}
+              disabled={loading}
+              loading={loading}
+              placeholder="Racconta la tua storia"
+              multiline={true}
+              inputId="testo"
+              buttonAriaLabel={loading ? 'Pubblicazione in corso...' : 'Pubblica'}
+            />
           </div>
-        </div>
-        <div className={styles.actions}>
-          <SVGButtonWrapper fillColor="var(--color-red)">
-            <button
-              className={`${styles.button} ${styles.buttonSubmit}`}
-              onClick={handleSubmit}
-              disabled={loading || !titolo.trim() || !testo.trim()}
-            >
-              {loading ? 'Pubblicazione...' : 'Pubblica'}
-            </button>
-          </SVGButtonWrapper>
         </div>
       </div>
     </BaseModal>

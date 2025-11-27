@@ -79,10 +79,10 @@
 }
 
 .closeButtonRelative {
-  position: relative;
-  align-self: flex-end;
-  top: auto;
-  right: auto;
+  position: absolute;
+  top: 0;
+  right: 0;
+  align-self: auto;
 }
 
 .closeButton:hover {
@@ -123,6 +123,8 @@
   gap: clamp(var(--spacing-sm, 12px), 2vw, var(--spacing-xl, 24px));
   text-align: center;
   color: var(--base-modal-image-text-color, rgba(255, 255, 255, 0.9));
+  /* Padding-right per evitare sovrapposizione con il pulsante di chiusura quando è relativo */
+  padding-right: calc(clamp(28px, 7vw, 48px) + clamp(8px, 2vw, 16px));
 }
 
 .imageArea figure {
