@@ -6,6 +6,7 @@ import { useCanvasTransform } from '@/hooks/useCanvasTransform';
 import CreateBaloonModal from '@/components/organisms/CreateBaloonModal/CreateBaloonModal';
 import ModalOpenedBaloon from '@/components/organisms/ModalOpenedBaloon/ModalOpenedBaloon';
 import TutorialModal from '@/components/organisms/TutorialModal/TutorialModal';
+import LoadingScreen from '@/components/organisms/LoadingScreen/LoadingScreen';
 import Postit from '@/components/organisms/Postit/Postit';
 import Toolbar from '@/components/molecules/Toolbar/Toolbar';
 import { Postit as PostitType, PostitCreateData } from '@/types/postit';
@@ -20,6 +21,8 @@ export default function HomePage() {
   const [authReady, setAuthReady] = useState(false);
   const [tutorialOpen, setTutorialOpen] = useState(false);
   const [clickPosition, setClickPosition] = useState<{ x: number; y: number } | null>(null);
+  const [showLoadingScreen, setShowLoadingScreen] = useState(true);
+  const [initialPostitIds, setInitialPostitIds] = useState<Set<number> | null>(null);
   const { postits, loading, error, isOfflineMode, addPostit, updatePostitPosition } = usePostits();
   const canvasRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -51,6 +54,22 @@ export default function HomePage() {
       setAuthReady(true);
     });
   }, []);
+
+  // Determina lo stato della connessione al server per il LoadingScreen
+  // null = ancora in controllo, true = connesso, false = non connesso
+  const serverConnectionStatus = (() => {
+    if (loading) return null; // Ancora in controllo
+    if (isOfflineMode) return false; // Server non connesso
+    return true; // Server connesso
+  })();
+
+  // Traccia gli ID dei postit presenti al primo render dopo il loading screen
+  useEffect(() => {
+    if (!showLoadingScreen && !loading && initialPostitIds === null) {
+      // Primo render dopo il loading screen: salva gli ID dei postit presenti
+      setInitialPostitIds(new Set(postits.map(p => p.id)));
+    }
+  }, [showLoadingScreen, loading, postits, initialPostitIds]);
 
   // Inizializza la board centrata al mount e al resize
   useEffect(() => {
@@ -305,52 +324,32 @@ export default function HomePage() {
   }
 
   return (
-    <div 
-      ref={containerRef}
-      className={`${styles.container} ${isPanning ? styles.panning : ''}`}
-      onClick={handlePageClick}
-      onMouseDown={handleCanvasMouseDown}
-      onTouchStart={handleCanvasTouchStart}
-    >
-      {loading && (
-        <div className={styles.loadingOverlay}>
-          <div className={styles.spinner} />
-        </div>
+    <>
+      {showLoadingScreen && (
+        <LoadingScreen
+          isServerConnected={serverConnectionStatus}
+          onComplete={() => {
+            setShowLoadingScreen(false);
+          }}
+        />
       )}
-
-      {isOfflineMode && (
-        <div className={styles.offlineBanner}>
-          ⚠️ Modalità offline: stai visualizzando post-it di esempio. La connessione al server non è disponibile.
-        </div>
-      )}
-
-      {error && !isOfflineMode && (
-        <div className={styles.error}>
-          {error.message}
-        </div>
-      )}
-
-      {!loading && (
-        <>
-          {/* Titolo mobile - fisso al top */}
-          <div className={styles.titleMobile}>
-            <img 
-              src="/images/testo_titolo.svg" 
-              alt="Titolo" 
-              className={styles.titleImage}
-            />
+      <div 
+        ref={containerRef}
+        className={`${styles.container} ${isPanning ? styles.panning : ''}`}
+        onClick={handlePageClick}
+        onMouseDown={handleCanvasMouseDown}
+        onTouchStart={handleCanvasTouchStart}
+      >
+        {error && !isOfflineMode && !showLoadingScreen && (
+          <div className={styles.error}>
+            {error.message}
           </div>
+        )}
 
-          <div 
-            ref={canvasRef}
-            className={styles.postitsContainer} 
-            data-postits-container
-            style={{
-              transform: `translate(calc(-50% + ${transform.translateX}px), calc(-50% + ${transform.translateY}px)) scale(${transform.scale})`,
-            }}
-          >
-            {/* Titolo desktop - assoluto sullo sfondo della board */}
-            <div className={styles.titleDesktop}>
+        {!loading && !showLoadingScreen && (
+          <>
+            {/* Titolo mobile - fisso al top */}
+            <div className={styles.titleMobile}>
               <img 
                 src="/images/testo_titolo.svg" 
                 alt="Titolo" 
@@ -358,51 +357,77 @@ export default function HomePage() {
               />
             </div>
 
-            {postits.map((postit) => (
-              <Postit
-                key={postit.id}
-                postit={postit}
-                onClick={() => handlePostitClick(postit)}
-                onPositionUpdate={handlePositionUpdate}
-                canvasTransform={transform}
-                viewportToCanvas={viewportToCanvas}
-              />
-            ))}
-          </div>
-        </>
-      )}
+            <div 
+              ref={canvasRef}
+              className={styles.postitsContainer} 
+              data-postits-container
+              style={{
+                transform: `translate(calc(-50% + ${transform.translateX}px), calc(-50% + ${transform.translateY}px)) scale(${transform.scale})`,
+              }}
+            >
+              {/* Titolo desktop - assoluto sullo sfondo della board */}
+              <div className={styles.titleDesktop}>
+                <img 
+                  src="/images/testo_titolo.svg" 
+                  alt="Titolo" 
+                  className={styles.titleImage}
+                />
+              </div>
 
-      <div data-modal>
-        <CreateBaloonModal
-          open={modalOpen}
-          onClose={() => {
-            setModalOpen(false);
-            setClickPosition(null);
-          }}
-          onSubmit={handleCreatePostit}
+              {postits.map((postit, index) => {
+                // Applica l'animazione solo ai postit presenti al primo render dopo il loading screen
+                const shouldAnimate = initialPostitIds !== null && initialPostitIds.has(postit.id);
+                const initialPostitsArray = initialPostitIds ? Array.from(initialPostitIds) : [];
+                const initialIndex = shouldAnimate ? initialPostitsArray.indexOf(postit.id) : -1;
+                
+                return (
+                  <Postit
+                    key={postit.id}
+                    postit={postit}
+                    onClick={() => handlePostitClick(postit)}
+                    onPositionUpdate={handlePositionUpdate}
+                    canvasTransform={transform}
+                    viewportToCanvas={viewportToCanvas}
+                    animationDelay={shouldAnimate ? initialIndex * 150 : undefined}
+                  />
+                );
+              })}
+            </div>
+          </>
+        )}
+
+        <div data-modal>
+          <CreateBaloonModal
+            open={modalOpen}
+            onClose={() => {
+              setModalOpen(false);
+              setClickPosition(null);
+            }}
+            onSubmit={handleCreatePostit}
+          />
+        </div>
+
+        <div data-opened-baloon-modal>
+          <ModalOpenedBaloon
+            open={openedBaloonModalOpen}
+            onClose={handleCloseOpenedBaloon}
+            postit={selectedPostit}
+          />
+        </div>
+
+        <TutorialModal
+          open={tutorialOpen}
+          onClose={() => setTutorialOpen(false)}
+          onComplete={() => setTutorialOpen(false)}
         />
+
+        {!modalOpen && !openedBaloonModalOpen && !tutorialOpen && (
+          <Toolbar
+            onPlusClick={handleToolbarCreateClick}
+            onQuestionmarkClick={handleToolbarHelpClick}
+          />
+        )}
       </div>
-
-      <div data-opened-baloon-modal>
-        <ModalOpenedBaloon
-          open={openedBaloonModalOpen}
-          onClose={handleCloseOpenedBaloon}
-          postit={selectedPostit}
-        />
-      </div>
-
-      <TutorialModal
-        open={tutorialOpen}
-        onClose={() => setTutorialOpen(false)}
-        onComplete={() => setTutorialOpen(false)}
-      />
-
-      {!modalOpen && !openedBaloonModalOpen && !tutorialOpen && (
-        <Toolbar
-          onPlusClick={handleToolbarCreateClick}
-          onQuestionmarkClick={handleToolbarHelpClick}
-        />
-      )}
-    </div>
+    </>
   );
 }

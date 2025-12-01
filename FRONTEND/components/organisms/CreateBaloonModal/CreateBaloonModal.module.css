@@ -49,3 +49,12 @@
   max-width: 100%;
   box-sizing: border-box;
 }
+
+.characterCount {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.6));
+  text-align: right;
+  width: 100%;
+  padding-right: var(--spacing-sm, 8px);
+  margin-top: calc(var(--gap-sm, 4px) * -1);
+}

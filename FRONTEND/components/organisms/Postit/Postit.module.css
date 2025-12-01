@@ -16,6 +16,32 @@
   background-repeat: no-repeat;
   background-position: center;
   filter: none;
+  opacity: 1; /* Visibile di default */
+  transform-origin: center center;
+}
+
+.postit.entering {
+  opacity: 0; /* Inizia invisibile per l'animazione */
+  animation: postitBounce 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+  transition: left var(--transition-cubic), top var(--transition-cubic);
+}
+
+@keyframes postitBounce {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  70% {
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .postitClickArea {
@@ -63,6 +89,9 @@
   user-select: none;
   will-change: transform;
   transition: none; /* Disabilita le transizioni durante il drag per migliorare le performance */
+  animation: none !important; /* Disabilita l'animazione durante il drag */
+  opacity: 1 !important; /* Assicura che sia visibile durante il drag */
+  transform: scale(1) !important; /* Reset del transform dell'animazione */
 }
 
 .title {

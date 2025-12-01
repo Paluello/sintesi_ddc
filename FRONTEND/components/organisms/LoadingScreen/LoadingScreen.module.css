@@ -1,0 +1,82 @@
+.loadingScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: var(--color-red);
+  z-index: 99999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 1;
+  transition: opacity 0.3s ease-out;
+}
+
+.loadingScreen.fadeOut {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.animationContainer {
+  width: 100%;
+  height: 100%;
+  max-width: 300px;
+  max-height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.animation {
+  width: 100%;
+  height: 100%;
+}
+
+.errorMessage {
+  position: absolute;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: var(--font-size-body);
+  text-align: center;
+  padding: var(--spacing-lg) var(--spacing-2xl);
+  max-width: 90%;
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .animationContainer {
+    max-width: 200px;
+    max-height: 200px;
+  }
+
+  .errorMessage {
+    font-size: var(--font-size-small);
+    padding: var(--spacing-md) var(--spacing-xl);
+  }
+}
+

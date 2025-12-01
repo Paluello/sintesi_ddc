@@ -160,6 +160,18 @@ export function usePostits() {
     fetchPostits();
   }, [fetchPostits]);
 
+  // Retry periodico quando siamo in modalità offline
+  useEffect(() => {
+    if (!isOfflineMode) return;
+
+    const retryInterval = setInterval(() => {
+      console.log('[usePostits] Retry connessione al server...');
+      fetchPostits();
+    }, 3000); // Riprova ogni 3 secondi
+
+    return () => clearInterval(retryInterval);
+  }, [isOfflineMode, fetchPostits]);
+
   const addPostit = useCallback(
     async (postitData: PostitCreateData) => {
       try {

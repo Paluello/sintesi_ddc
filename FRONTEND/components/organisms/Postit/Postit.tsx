@@ -70,6 +70,7 @@ interface PostitProps {
   onPositionUpdate: (id: number, x: number, y: number) => Promise<void>;
   canvasTransform?: { scale: number; translateX: number; translateY: number };
   viewportToCanvas?: (x: number, y: number) => { x: number; y: number };
+  animationDelay?: number; // Delay in millisecondi per l'animazione di entrata
 }
 
 function Postit({ 
@@ -77,10 +78,12 @@ function Postit({
   onClick, 
   onPositionUpdate, 
   canvasTransform,
-  viewportToCanvas 
+  viewportToCanvas,
+  animationDelay
 }: PostitProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState({ x: postit.X || 0, y: postit.Y || 0 });
+  const [animationComplete, setAnimationComplete] = useState(false);
   const [safeAreas, setSafeAreas] = useState<Record<string, SafeArea> | null>(loadedSafeAreas);
   const [paths, setPaths] = useState<Record<string, { path: string; viewBox: { width: number; height: number; x: number; y: number } }> | null>(loadedPaths);
   const dragStateRef = useRef<{
@@ -629,10 +632,23 @@ function Postit({
     ? undefined // Usa la classe CSS .dragging che ha z-index: var(--z-index-dragging) = 1000
     : (postit.zIndex ?? 1); // Usa lo z-index calcolato o 1 come fallback
 
+  const shouldAnimate = animationDelay !== undefined && !animationComplete;
+  
+  // Gestisce il completamento dell'animazione
+  useEffect(() => {
+    if (shouldAnimate && animationDelay !== undefined) {
+      const timer = setTimeout(() => {
+        setAnimationComplete(true);
+      }, (animationDelay || 0) + 700); // Delay + durata animazione (0.7s)
+      
+      return () => clearTimeout(timer);
+    }
+  }, [shouldAnimate, animationDelay]);
+  
   return (
     <div
       ref={containerRef}
-      className={`${styles.postit} ${isDragging ? styles.dragging : ''}`}
+      className={`${styles.postit} ${isDragging ? styles.dragging : ''} ${shouldAnimate ? styles.entering : ''}`}
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
@@ -649,6 +665,7 @@ function Postit({
         WebkitMaskMode: 'alpha',
         maskMode: 'alpha',
         pointerEvents: 'none', // Disabilita gli eventi sul container principale
+        ...(shouldAnimate && { animationDelay: `${animationDelay}ms` }),
         ...safeAreaVars,
       } as CSSProperties}
       data-postit

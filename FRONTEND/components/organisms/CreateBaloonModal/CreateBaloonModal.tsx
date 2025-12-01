@@ -18,10 +18,18 @@ const getRandomStyle = (): PostitStyle => {
   return stylesList[Math.floor(Math.random() * stylesList.length)];
 };
 
+const MAX_CHARACTERS = 450;
+
 export default function CreateBaloonModal({ open, onClose, onSubmit }: CreateBaloonModalProps) {
   const [titolo, setTitolo] = useState('');
   const [testo, setTesto] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const handleTestoChange = (value: string) => {
+    if (value.length <= MAX_CHARACTERS) {
+      setTesto(value);
+    }
+  };
 
   const handleSubmit = async () => {
     if (!titolo.trim() || !testo.trim()) {
@@ -95,7 +103,7 @@ export default function CreateBaloonModal({ open, onClose, onSubmit }: CreateBal
           <div className={styles.field}>
             <InputWithSubmitButton
               value={testo}
-              onChange={setTesto}
+              onChange={handleTestoChange}
               onSubmit={handleSubmit}
               canSubmit={!!titolo.trim() && !!testo.trim()}
               disabled={loading}
@@ -105,6 +113,9 @@ export default function CreateBaloonModal({ open, onClose, onSubmit }: CreateBal
               inputId="testo"
               buttonAriaLabel={loading ? 'Pubblicazione in corso...' : 'Pubblica'}
             />
+            <div className={styles.characterCount}>
+              {testo.length}/{MAX_CHARACTERS}
+            </div>
           </div>
         </div>
       </div>

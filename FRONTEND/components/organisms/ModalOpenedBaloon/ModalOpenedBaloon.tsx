@@ -14,10 +14,17 @@ interface ModalOpenedBaloonProps {
 }
 
 const EXIT_ANIMATION_MS = 300;
+const MAX_CHARACTERS = 450;
 
 export default function ModalOpenedBaloon({ open, onClose, postit }: ModalOpenedBaloonProps) {
   const [commentText, setCommentText] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  const handleCommentTextChange = (value: string) => {
+    if (value.length <= MAX_CHARACTERS) {
+      setCommentText(value);
+    }
+  };
   
   // Memoizza postitIdentifier per evitare cambiamenti non necessari
   const postitIdentifier = useMemo(() => {
@@ -228,7 +235,7 @@ export default function ModalOpenedBaloon({ open, onClose, postit }: ModalOpened
           <div className={styles.commentForm}>
             <InputWithSubmitButton
               value={commentText}
-              onChange={setCommentText}
+              onChange={handleCommentTextChange}
               onSubmit={handleSubmit}
               canSubmit={!!commentText.trim() && !!postit}
               disabled={!postit}
@@ -237,6 +244,9 @@ export default function ModalOpenedBaloon({ open, onClose, postit }: ModalOpened
               multiline={true}
               buttonAriaLabel={submitting ? 'Invio in corso...' : 'Commenta'}
             />
+            <div className={styles.characterCount}>
+              {commentText.length}/{MAX_CHARACTERS}
+            </div>
           </div>
         </div>
       </BaseModal>

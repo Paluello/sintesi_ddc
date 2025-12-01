@@ -20,12 +20,12 @@ interface UseCanvasTransformReturn {
   canvasToViewport: (x: number, y: number) => { x: number; y: number };
 }
 
-const MIN_SCALE = 0.3;
+const MIN_SCALE = 0.8; // Aumentato da 0.3 per limitare lo zoom-out
 const MAX_SCALE = 2;
-const DEFAULT_SCALE = 1;
-const ZOOM_STEP = 0.1;
+const DEFAULT_SCALE = 1.5;
+const ZOOM_STEP = 0.05;
 const BOARD_BASE_SIZE = 2000; // Dimensione base della board (2000x2000px)
-const BOARD_MARGIN = 40; // Margine fisso dai bordi (40px su ogni lato)
+const BOARD_MARGIN = 20; // Ridotto da 40 a 20 per zoom iniziale più ravvicinato
 
 export function useCanvasTransform(): UseCanvasTransformReturn {
   const [transform, setTransform] = useState<CanvasTransform>({
