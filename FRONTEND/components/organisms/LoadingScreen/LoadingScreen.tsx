@@ -8,12 +8,14 @@ interface LoadingScreenProps {
   onComplete?: () => void;
   loops?: number; // Numero di loop da completare (se server connesso)
   isServerConnected?: boolean | null; // null = ancora in controllo, true = connesso, false = non connesso
+  backgroundColor?: string; // Colore di sfondo da applicare dinamicamente
 }
 
 export default function LoadingScreen({ 
   onComplete, 
   loops = 2,
-  isServerConnected = null
+  isServerConnected = null,
+  backgroundColor = '#802928' // Fallback al colore originale
 }: LoadingScreenProps) {
   const [isVisible, setIsVisible] = useState(true);
   const [isFading, setIsFading] = useState(false);
@@ -108,7 +110,10 @@ export default function LoadingScreen({
   }
 
   return (
-    <div className={`${styles.loadingScreen} ${isFading ? styles.fadeOut : ''}`}>
+    <div 
+      className={`${styles.loadingScreen} ${isFading ? styles.fadeOut : ''}`}
+      style={{ backgroundColor }}
+    >
       <div className={styles.animationContainer}>
         {animationData && (
           <Lottie 

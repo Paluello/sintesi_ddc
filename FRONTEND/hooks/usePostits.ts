@@ -124,6 +124,7 @@ function calculateZIndexFromTimestamp(postit: Postit, allPostits: Postit[]): num
   return Math.floor(normalized);
 }
 
+
 export function usePostits() {
   const [postits, setPostits] = useState<Postit[]>([]);
   const [loading, setLoading] = useState(true);
@@ -175,7 +176,16 @@ export function usePostits() {
   const addPostit = useCallback(
     async (postitData: PostitCreateData) => {
       try {
+        // Le coordinate vengono passate direttamente senza alcuna conversione
         const newPostit = await createPostit(postitData);
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[addPostit] Postit creato:', {
+            id: newPostit.id,
+            coordinate: { X: newPostit.X, Y: newPostit.Y },
+          });
+        }
+        
         // Aggiungi il nuovo postit e riordina l'array
         setPostits((prev) => {
           const updated = [...prev, newPostit];
@@ -202,6 +212,7 @@ export function usePostits() {
           console.log(`[usePostits] Aggiornamento posizione postit ${id}, documentId: ${postit.documentId || 'non disponibile'}, nuova posizione: (${x}, ${y})`);
         }
         
+        // Le coordinate vengono passate direttamente senza alcuna conversione
         const updatedPostit = await updatePostit(id, { X: x, Y: y }, postit?.documentId);
         
         console.log(`[usePostits] Posizione aggiornata con successo per postit ${id}`);

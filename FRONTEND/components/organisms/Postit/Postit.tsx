@@ -5,6 +5,7 @@ import localFont from 'next/font/local';
 import { Postit as PostitType, PostitStyle } from '@/types/postit';
 import styles from './Postit.module.css';
 import { loadAllSafeAreas, loadAllPaths, type SafeArea } from '@/lib/svgSafeArea';
+import { getSVGWithColor } from '@/lib/svgColorUtils';
 
 const BALLOON_IMAGES: Record<PostitStyle, string> = {
   a: '/images/baloons/baloon-1.svg',
@@ -71,6 +72,7 @@ interface PostitProps {
   canvasTransform?: { scale: number; translateX: number; translateY: number };
   viewportToCanvas?: (x: number, y: number) => { x: number; y: number };
   animationDelay?: number; // Delay in millisecondi per l'animazione di entrata
+  backgroundColor?: string; // Colore di sfondo per sincronizzare i bordi degli SVG
 }
 
 function Postit({ 
@@ -79,13 +81,15 @@ function Postit({
   onPositionUpdate, 
   canvasTransform,
   viewportToCanvas,
-  animationDelay
+  animationDelay,
+  backgroundColor = '#802928' // Fallback al colore originale
 }: PostitProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState({ x: postit.X || 0, y: postit.Y || 0 });
   const [animationComplete, setAnimationComplete] = useState(false);
   const [safeAreas, setSafeAreas] = useState<Record<string, SafeArea> | null>(loadedSafeAreas);
   const [paths, setPaths] = useState<Record<string, { path: string; viewBox: { width: number; height: number; x: number; y: number } }> | null>(loadedPaths);
+  const [modifiedSVGUrl, setModifiedSVGUrl] = useState<string | null>(null);
   const dragStateRef = useRef<{
     offsetX: number;
     offsetY: number;
@@ -167,6 +171,33 @@ function Postit({
   }, []);
 
   const baloonImageSrc = BALLOON_IMAGES[resolvedStyle] || DEFAULT_BALLOON;
+  
+  // Carica l'SVG modificato con il colore di sfondo
+  useEffect(() => {
+    let isMounted = true;
+    
+    getSVGWithColor(baloonImageSrc, backgroundColor)
+      .then((modifiedUrl) => {
+        if (isMounted) {
+          setModifiedSVGUrl(modifiedUrl);
+        }
+      })
+      .catch((error) => {
+        console.error('Errore nel caricamento dell\'SVG modificato:', error);
+        if (isMounted) {
+          // Fallback all'SVG originale in caso di errore
+          setModifiedSVGUrl(baloonImageSrc);
+        }
+      });
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [baloonImageSrc, backgroundColor]);
+  
+  // Usa l'SVG modificato se disponibile, altrimenti quello originale
+  const finalBaloonImageSrc = modifiedSVGUrl || baloonImageSrc;
+  
   // Usa il path caricato dall'SVG, altrimenti usa un path vuoto (non cliccabile finché non è caricato)
   const pathData = paths?.[resolvedStyle];
   const baloonPath = pathData?.path || '';
@@ -279,7 +310,7 @@ function Postit({
     
     if (viewportToCanvas && canvasTransform) {
       // Convert mouse position to canvas coordinates
-      const mouseCanvasCoords = viewportToCanvas(mouseXViewport, mouseYViewport);
+      const mouseCanvasCoords = viewportToCanvas(mouseXViewport, mouseYViewport, containerRect.width, containerRect.height);
       // Calculate offset in canvas coordinates
       offsetXCanvas = mouseCanvasCoords.x - initialX;
       offsetYCanvas = mouseCanvasCoords.y - initialY;
@@ -323,7 +354,7 @@ function Postit({
       
       if (viewportToCanvas && canvasTransform) {
         // Convert mouse position to canvas coordinates
-        const mouseCanvasCoords = viewportToCanvas(mouseXViewport, mouseYViewport);
+        const mouseCanvasCoords = viewportToCanvas(mouseXViewport, mouseYViewport, containerRect.width, containerRect.height);
         // New position = mouse position in canvas - offset in canvas
         newX = mouseCanvasCoords.x - dragStateRef.current.offsetX;
         newY = mouseCanvasCoords.y - dragStateRef.current.offsetY;
@@ -468,7 +499,7 @@ function Postit({
     
     if (viewportToCanvas && canvasTransform) {
       // Convert touch position to canvas coordinates
-      const touchCanvasCoords = viewportToCanvas(touchXViewport, touchYViewport);
+      const touchCanvasCoords = viewportToCanvas(touchXViewport, touchYViewport, containerRect.width, containerRect.height);
       // Calculate offset in canvas coordinates
       offsetXCanvas = touchCanvasCoords.x - initialX;
       offsetYCanvas = touchCanvasCoords.y - initialY;
@@ -514,7 +545,7 @@ function Postit({
       
       if (viewportToCanvas && canvasTransform) {
         // Convert touch position to canvas coordinates
-        const touchCanvasCoords = viewportToCanvas(touchXViewport, touchYViewport);
+        const touchCanvasCoords = viewportToCanvas(touchXViewport, touchYViewport, containerRect.width, containerRect.height);
         // New position = touch position in canvas - offset in canvas
         newX = touchCanvasCoords.x - dragStateRef.current.offsetX;
         newY = touchCanvasCoords.y - dragStateRef.current.offsetY;
@@ -644,18 +675,27 @@ function Postit({
       return () => clearTimeout(timer);
     }
   }, [shouldAnimate, animationDelay]);
+
+  // Converti coordinate canvas (centro a 0,0) in coordinate CSS relative al container
+  // Il container ha min-width/min-height di 2000px e è centrato, quindi il centro CSS è a (1000px, 1000px)
+  // Le coordinate canvas rappresentano il CENTRO del postit, quindi dobbiamo sottrarre metà larghezza/altezza
+  const CONTAINER_CENTER_OFFSET = 1000;
+  const POSTIT_WIDTH = 240;
+  const POSTIT_HEIGHT = 240;
+  const cssLeft = CONTAINER_CENTER_OFFSET + position.x - (POSTIT_WIDTH / 2);
+  const cssTop = CONTAINER_CENTER_OFFSET + position.y - (POSTIT_HEIGHT / 2);
   
   return (
     <div
       ref={containerRef}
       className={`${styles.postit} ${isDragging ? styles.dragging : ''} ${shouldAnimate ? styles.entering : ''}`}
       style={{
-        left: `${position.x}px`,
-        top: `${position.y}px`,
+        left: `${cssLeft}px`,
+        top: `${cssTop}px`,
         zIndex: computedZIndex,
-        backgroundImage: `url(${baloonImageSrc})`,
-        WebkitMaskImage: `url(${baloonImageSrc})`,
-        maskImage: `url(${baloonImageSrc})`,
+        backgroundImage: `url(${finalBaloonImageSrc})`,
+        WebkitMaskImage: `url(${finalBaloonImageSrc})`,
+        maskImage: `url(${finalBaloonImageSrc})`,
         WebkitMaskSize: 'contain',
         maskSize: 'contain',
         WebkitMaskRepeat: 'no-repeat',
@@ -749,7 +789,8 @@ export default memo(Postit, (prevProps, nextProps) => {
     prevProps.canvasTransform?.translateY === nextProps.canvasTransform?.translateY &&
     prevProps.onClick === nextProps.onClick &&
     prevProps.onPositionUpdate === nextProps.onPositionUpdate &&
-    prevProps.viewportToCanvas === nextProps.viewportToCanvas
+    prevProps.viewportToCanvas === nextProps.viewportToCanvas &&
+    prevProps.backgroundColor === nextProps.backgroundColor
   );
   
   // Se le props sono uguali, non serve re-render (ritorna true)

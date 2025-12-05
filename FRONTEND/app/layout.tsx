@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import ThemeProvider from '@/components/providers/ThemeProvider';
+import Navbar from '@/components/organisms/Navbar/Navbar';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -15,7 +16,10 @@ export default function RootLayout({
   return (
     <html lang="it">
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <Navbar />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

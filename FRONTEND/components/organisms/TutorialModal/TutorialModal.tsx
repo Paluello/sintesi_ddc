@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import BaseModal from '../BaseModal/BaseModal';
 import styles from './TutorialModal.module.css';
 
@@ -30,9 +31,31 @@ const TUTORIAL_SECTIONS = [
   },
 ];
 
+const DESKTOP_BREAKPOINT = 768;
+
 export default function TutorialModal({ open, onClose, onComplete }: TutorialModalProps) {
+  const [currentSection, setCurrentSection] = useState(0);
+  const [isDesktop, setIsDesktop] = useState(false);
   const titleId = 'tutorial-modal-title';
   const descriptionId = 'tutorial-modal-description';
+
+  // Rileva se siamo su desktop
+  useEffect(() => {
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= DESKTOP_BREAKPOINT);
+    };
+
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
+
+  // Reset alla prima sezione quando il modal si apre
+  useEffect(() => {
+    if (open) {
+      setCurrentSection(0);
+    }
+  }, [open]);
 
   const handleClose = () => {
     if (onComplete) {
@@ -40,6 +63,31 @@ export default function TutorialModal({ open, onClose, onComplete }: TutorialMod
     }
     onClose();
   };
+
+  const handleNext = () => {
+    if (currentSection < TUTORIAL_SECTIONS.length - 1) {
+      setCurrentSection(currentSection + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentSection > 0) {
+      setCurrentSection(currentSection - 1);
+    }
+  };
+
+  const isFirstSection = currentSection === 0;
+  const isLastSection = currentSection === TUTORIAL_SECTIONS.length - 1;
+
+  // Determina lo sfondo SVG in base al breakpoint
+  const svgPath = isDesktop 
+    ? '/images/tut_desktop/sfondo_tutorial.svg'
+    : '/images/rettangoli/sfondo_tutorial.svg';
+
+  // Sezioni da mostrare: su desktop solo quella corrente, su mobile tutte
+  const sectionsToShow = isDesktop 
+    ? [TUTORIAL_SECTIONS[currentSection]]
+    : TUTORIAL_SECTIONS;
 
   return (
     <BaseModal
@@ -51,41 +99,73 @@ export default function TutorialModal({ open, onClose, onComplete }: TutorialMod
       contentClassName={styles.tutorialContainer}
       wrapperClassName={styles.tutorialWrapper}
       overlayAlignItems="flex-start"
-      svgPath="/images/rettangoli/sfondo_tutorial.svg"
+      svgPath={svgPath}
     >
       <div className={styles.tutorialBody} id={descriptionId}>
-        {TUTORIAL_SECTIONS.map((section) => (
-          <div key={section.id} className={styles.tutorialSection}>
-            <div className={styles.imageWrapper}>
-              <img 
-                src={section.image} 
-                alt={section.alt} 
-                className={styles.tutorialImage}
-              />
+        {isDesktop && (
+          <button
+            type="button"
+            className={`${styles.navButton} ${styles.navButtonLeft}`}
+            onClick={handlePrev}
+            disabled={isFirstSection}
+            aria-label="Sezione precedente"
+          >
+            <img 
+              src="/images/tut_desktop/left.svg" 
+              alt="Precedente" 
+              className={styles.navIcon}
+            />
+          </button>
+        )}
+        <div className={styles.sectionsContainer}>
+          {sectionsToShow.map((section) => (
+            <div key={section.id} className={styles.tutorialSection}>
+              <div className={styles.imageWrapper}>
+                <img 
+                  src={section.image} 
+                  alt={section.alt} 
+                  className={styles.tutorialImage}
+                />
+              </div>
+              <div className={styles.textWrapper}>
+                <p className={styles.tutorialText}>
+                  {section.text.split('\n\n').map((paragraph, index, array) => (
+                    <span key={index}>
+                      {paragraph.split('+').map((part, partIndex, partArray) => (
+                        <span key={partIndex}>
+                          {part}
+                          {partIndex < partArray.length - 1 && (
+                            <img 
+                              src="/images/tasti/butt_plus.svg" 
+                              alt="+" 
+                              className={styles.plusIcon}
+                            />
+                          )}
+                        </span>
+                      ))}
+                      {index < array.length - 1 && <><br /><br /></>}
+                    </span>
+                  ))}
+                </p>
+              </div>
             </div>
-            <div className={styles.textWrapper}>
-              <p className={styles.tutorialText}>
-                {section.text.split('\n\n').map((paragraph, index, array) => (
-                  <span key={index}>
-                    {paragraph.split('+').map((part, partIndex, partArray) => (
-                      <span key={partIndex}>
-                        {part}
-                        {partIndex < partArray.length - 1 && (
-                          <img 
-                            src="/images/tasti/butt_plus.svg" 
-                            alt="+" 
-                            className={styles.plusIcon}
-                          />
-                        )}
-                      </span>
-                    ))}
-                    {index < array.length - 1 && <><br /><br /></>}
-                  </span>
-                ))}
-              </p>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
+        {isDesktop && (
+          <button
+            type="button"
+            className={`${styles.navButton} ${styles.navButtonRight}`}
+            onClick={handleNext}
+            disabled={isLastSection}
+            aria-label="Sezione successiva"
+          >
+            <img 
+              src="/images/tut_desktop/right.svg" 
+              alt="Successiva" 
+              className={styles.navIcon}
+            />
+          </button>
+        )}
       </div>
     </BaseModal>
   );

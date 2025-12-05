@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { usePostits } from '@/hooks/usePostits';
 import { useCanvasTransform } from '@/hooks/useCanvasTransform';
+import { useRandomBackground } from '@/hooks/useRandomBackground';
 import CreateBaloonModal from '@/components/organisms/CreateBaloonModal/CreateBaloonModal';
 import ModalOpenedBaloon from '@/components/organisms/ModalOpenedBaloon/ModalOpenedBaloon';
 import TutorialModal from '@/components/organisms/TutorialModal/TutorialModal';
@@ -23,11 +24,13 @@ export default function HomePage() {
   const [clickPosition, setClickPosition] = useState<{ x: number; y: number } | null>(null);
   const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   const [initialPostitIds, setInitialPostitIds] = useState<Set<number> | null>(null);
+  const [centerDebugInfo, setCenterDebugInfo] = useState<{ viewportX: number; viewportY: number; canvasX: number; canvasY: number } | null>(null);
   const { postits, loading, error, isOfflineMode, addPostit, updatePostitPosition } = usePostits();
   const canvasRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const mouseDownRef = useRef<{ x: number; y: number; time: number } | null>(null);
   const mouseMovedRef = useRef(false);
+  const backgroundColor = useRandomBackground();
   
   const {
     transform,
@@ -70,6 +73,45 @@ export default function HomePage() {
       setInitialPostitIds(new Set(postits.map(p => p.id)));
     }
   }, [showLoadingScreen, loading, postits, initialPostitIds]);
+
+  // Aggiorna le informazioni di debug del centro
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'development') return;
+    
+    const container = containerRef.current;
+    if (!container) return;
+
+    const updateDebugInfo = () => {
+      const rect = container.getBoundingClientRect();
+      const viewportCenterX = rect.width / 2;
+      const viewportCenterY = rect.height / 2;
+      const canvasCoords = viewportToCanvas(viewportCenterX, viewportCenterY, rect.width, rect.height);
+      
+      setCenterDebugInfo({
+        viewportX: viewportCenterX,
+        viewportY: viewportCenterY,
+        canvasX: canvasCoords.x,
+        canvasY: canvasCoords.y,
+      });
+    };
+
+    updateDebugInfo();
+
+    // Aggiorna quando cambia il transform o quando si fa resize
+    const handleResize = () => {
+      updateDebugInfo();
+    };
+
+    window.addEventListener('resize', handleResize);
+    
+    // Aggiorna periodicamente per catturare cambiamenti durante pan/zoom
+    const interval = setInterval(updateDebugInfo, 100);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [viewportToCanvas, transform]);
 
   // Inizializza la board centrata al mount e al resize
   useEffect(() => {
@@ -173,8 +215,35 @@ export default function HomePage() {
     const viewportCenterX = rect.width / 2;
     const viewportCenterY = rect.height / 2;
     
-    // Converti il centro della viewport in coordinate canvas
-    const canvasCoords = viewportToCanvas(viewportCenterX, viewportCenterY);
+    // Calcola la posizione del mouse relativa al container
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    
+    // Se il click è vicino al centro (entro 50px), usa sempre (0, 0) nel canvas
+    // indipendentemente dal transform corrente
+    const distanceFromCenter = Math.sqrt(
+      Math.pow(mouseX - viewportCenterX, 2) + Math.pow(mouseY - viewportCenterY, 2)
+    );
+    
+    let canvasCoords;
+    if (distanceFromCenter < 50) {
+      // Click al centro: usa sempre (0, 0) nel canvas
+      canvasCoords = { x: 0, y: 0 };
+    } else {
+      // Click altrove: calcola le coordinate canvas del punto cliccato
+      canvasCoords = viewportToCanvas(mouseX, mouseY, rect.width, rect.height);
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[handlePageClick] Debug coordinate:', {
+        mousePos: { x: mouseX, y: mouseY },
+        viewportCenter: { x: viewportCenterX, y: viewportCenterY },
+        distanceFromCenter,
+        canvasCoords,
+        containerSize: { width: rect.width, height: rect.height },
+        transform,
+      });
+    }
 
     setClickPosition({ x: canvasCoords.x, y: canvasCoords.y });
     setModalOpen(true);
@@ -189,19 +258,11 @@ export default function HomePage() {
       return;
     }
 
-    const container = containerRef.current;
-    if (container) {
-      const rect = container.getBoundingClientRect();
-      const viewportCenterX = rect.width / 2;
-      const viewportCenterY = rect.height / 2;
-      const canvasCoords = viewportToCanvas(viewportCenterX, viewportCenterY);
-      setClickPosition({ x: canvasCoords.x, y: canvasCoords.y });
-    } else {
-      setClickPosition({ x: 100, y: 100 });
-    }
-
+    // Quando si crea un postit dalla toolbar, usa sempre (0, 0) nel canvas
+    // indipendentemente dal transform corrente
+    setClickPosition({ x: 0, y: 0 });
     setModalOpen(true);
-  }, [tutorialOpen, modalOpen, openedBaloonModalOpen, viewportToCanvas]);
+  }, [tutorialOpen, modalOpen, openedBaloonModalOpen]);
 
   const handleToolbarHelpClick = useCallback(() => {
     setTutorialOpen(true);
@@ -295,6 +356,14 @@ export default function HomePage() {
 
   const handleCreatePostit = useCallback(async (data: PostitCreateData) => {
     const position = clickPosition || { x: 100, y: 100 };
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[handleCreatePostit] Creazione postit con coordinate:', {
+        position,
+        clickPosition,
+      });
+    }
+    
     await addPostit({
       ...data,
       X: position.x,
@@ -328,6 +397,7 @@ export default function HomePage() {
       {showLoadingScreen && (
         <LoadingScreen
           isServerConnected={serverConnectionStatus}
+          backgroundColor={backgroundColor}
           onComplete={() => {
             setShowLoadingScreen(false);
           }}
@@ -336,6 +406,7 @@ export default function HomePage() {
       <div 
         ref={containerRef}
         className={`${styles.container} ${isPanning ? styles.panning : ''}`}
+        style={{ backgroundColor }}
         onClick={handlePageClick}
         onMouseDown={handleCanvasMouseDown}
         onTouchStart={handleCanvasTouchStart}
@@ -348,15 +419,6 @@ export default function HomePage() {
 
         {!loading && !showLoadingScreen && (
           <>
-            {/* Titolo mobile - fisso al top */}
-            <div className={styles.titleMobile}>
-              <img 
-                src="/images/testo_titolo.svg" 
-                alt="Titolo" 
-                className={styles.titleImage}
-              />
-            </div>
-
             <div 
               ref={canvasRef}
               className={styles.postitsContainer} 
@@ -365,6 +427,15 @@ export default function HomePage() {
                 transform: `translate(calc(-50% + ${transform.translateX}px), calc(-50% + ${transform.translateY}px)) scale(${transform.scale})`,
               }}
             >
+              {/* Titolo mobile - assoluto sullo sfondo della board */}
+              <div className={styles.titleMobile}>
+                <img 
+                  src="/images/testo_titolo.svg" 
+                  alt="Titolo" 
+                  className={styles.titleImage}
+                />
+              </div>
+
               {/* Titolo desktop - assoluto sullo sfondo della board */}
               <div className={styles.titleDesktop}>
                 <img 
@@ -389,6 +460,7 @@ export default function HomePage() {
                     canvasTransform={transform}
                     viewportToCanvas={viewportToCanvas}
                     animationDelay={shouldAnimate ? initialIndex * 150 : undefined}
+                    backgroundColor={backgroundColor}
                   />
                 );
               })}
@@ -426,6 +498,25 @@ export default function HomePage() {
             onPlusClick={handleToolbarCreateClick}
             onQuestionmarkClick={handleToolbarHelpClick}
           />
+        )}
+
+        {/* Indicatore di debug per il centro */}
+        {process.env.NODE_ENV === 'development' && centerDebugInfo && !showLoadingScreen && (
+          <div className={styles.debugCenter}>
+            <div className={styles.debugCrosshair} />
+            <div className={styles.debugInfo}>
+              <div><strong>Centro Viewport:</strong></div>
+              <div>X: {centerDebugInfo.viewportX.toFixed(1)}px</div>
+              <div>Y: {centerDebugInfo.viewportY.toFixed(1)}px</div>
+              <div style={{ marginTop: '8px' }}><strong>Centro Canvas:</strong></div>
+              <div>X: {centerDebugInfo.canvasX.toFixed(1)}</div>
+              <div>Y: {centerDebugInfo.canvasY.toFixed(1)}</div>
+              <div style={{ marginTop: '8px' }}><strong>Transform:</strong></div>
+              <div>Scale: {transform.scale.toFixed(2)}</div>
+              <div>TranslateX: {transform.translateX.toFixed(1)}px</div>
+              <div>TranslateY: {transform.translateY.toFixed(1)}px</div>
+            </div>
+          </div>
         )}
       </div>
     </>

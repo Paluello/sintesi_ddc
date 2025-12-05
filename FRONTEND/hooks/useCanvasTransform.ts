@@ -20,12 +20,11 @@ interface UseCanvasTransformReturn {
   canvasToViewport: (x: number, y: number) => { x: number; y: number };
 }
 
-const MIN_SCALE = 0.8; // Aumentato da 0.3 per limitare lo zoom-out
+const MIN_SCALE = 0.5;
 const MAX_SCALE = 2;
-const DEFAULT_SCALE = 1.5;
+const DEFAULT_SCALE = 0.8;
 const ZOOM_STEP = 0.05;
-const BOARD_BASE_SIZE = 2000; // Dimensione base della board (2000x2000px)
-const BOARD_MARGIN = 20; // Ridotto da 40 a 20 per zoom iniziale più ravvicinato
+const BOARD_MARGIN = 20; // Margine per evitare che la board tocchi i bordi
 
 export function useCanvasTransform(): UseCanvasTransformReturn {
   const [transform, setTransform] = useState<CanvasTransform>({
@@ -45,24 +44,24 @@ export function useCanvasTransform(): UseCanvasTransformReturn {
   }, [transform]);
 
   // Convert viewport coordinates to canvas coordinates
-  // Con il nuovo sistema, il container è centrato con translate(-50%, -50%)
-  // quindi dobbiamo considerare il centro del container come origine
+  // Con il nuovo sistema, il centro del viewport corrisponde a (0, 0) nel canvas
+  // Il container è centrato con CSS translate(-50%, -50%)
   const viewportToCanvas = useCallback(
     (x: number, y: number, containerWidth?: number, containerHeight?: number): { x: number; y: number } => {
       if (containerWidth !== undefined && containerHeight !== undefined) {
         // Il centro del container è a (containerWidth/2, containerHeight/2)
         const centerX = containerWidth / 2;
         const centerY = containerHeight / 2;
-        // Coordinate relative al centro
+        // Coordinate relative al centro del viewport
         const relativeX = x - centerX - transform.translateX;
         const relativeY = y - centerY - transform.translateY;
-        // Converti in coordinate canvas (il centro della board è 1000, 1000)
+        // Converti in coordinate canvas: il centro (0, 0) corrisponde al centro del viewport
         return {
-          x: BOARD_BASE_SIZE / 2 + relativeX / transform.scale,
-          y: BOARD_BASE_SIZE / 2 + relativeY / transform.scale,
+          x: relativeX / transform.scale,
+          y: relativeY / transform.scale,
         };
       }
-      // Fallback al comportamento precedente
+      // Fallback: assumiamo che x, y siano già relativi al centro
       return {
         x: (x - transform.translateX) / transform.scale,
         y: (y - transform.translateY) / transform.scale,
@@ -72,21 +71,23 @@ export function useCanvasTransform(): UseCanvasTransformReturn {
   );
 
   // Convert canvas coordinates to viewport coordinates
+  // Con il nuovo sistema, il centro del canvas (0, 0) corrisponde al centro del viewport
   const canvasToViewport = useCallback(
     (x: number, y: number, containerWidth?: number, containerHeight?: number): { x: number; y: number } => {
       if (containerWidth !== undefined && containerHeight !== undefined) {
         // Il centro del container è a (containerWidth/2, containerHeight/2)
         const centerX = containerWidth / 2;
         const centerY = containerHeight / 2;
-        // Coordinate relative al centro della board
-        const relativeX = (x - BOARD_BASE_SIZE / 2) * transform.scale;
-        const relativeY = (y - BOARD_BASE_SIZE / 2) * transform.scale;
+        // Converti coordinate canvas in coordinate relative al centro
+        const relativeX = x * transform.scale;
+        const relativeY = y * transform.scale;
+        // Posizione nel viewport: centro + offset relativo + translate
         return {
           x: centerX + relativeX + transform.translateX,
           y: centerY + relativeY + transform.translateY,
         };
       }
-      // Fallback al comportamento precedente
+      // Fallback: assumiamo che x, y siano già relativi al centro
       return {
         x: x * transform.scale + transform.translateX,
         y: y * transform.scale + transform.translateY,
@@ -125,13 +126,16 @@ export function useCanvasTransform(): UseCanvasTransformReturn {
 
   const initializeTransform = useCallback(
     (containerWidth: number, containerHeight: number) => {
-      // Calcola lo spazio disponibile considerando i margini fissi
+      // Calcola lo spazio disponibile considerando i margini
       const availableWidth = containerWidth - BOARD_MARGIN * 2;
       const availableHeight = containerHeight - BOARD_MARGIN * 2;
 
-      // Calcola lo zoom iniziale per far entrare la board nell'area disponibile
-      const scaleX = availableWidth / BOARD_BASE_SIZE;
-      const scaleY = availableHeight / BOARD_BASE_SIZE;
+      // Calcola uno scale iniziale basato sulle dimensioni del viewport
+      // Usa una dimensione di riferimento di 2000px (come prima con BOARD_BASE_SIZE)
+      // per mantenere lo stesso comportamento dello zoom iniziale
+      const referenceSize = 2000; // Dimensione di riferimento per il calcolo dello scale
+      const scaleX = availableWidth / referenceSize;
+      const scaleY = availableHeight / referenceSize;
       const initialScale = Math.min(scaleX, scaleY, MAX_SCALE);
 
       // Salva lo scale iniziale come limite massimo per lo zoom in
@@ -177,12 +181,13 @@ export function useCanvasTransform(): UseCanvasTransformReturn {
         const centerY = containerHeight / 2;
         const relativeX = mouseX - centerX - transform.translateX;
         const relativeY = mouseY - centerY - transform.translateY;
-        const canvasX = BOARD_BASE_SIZE / 2 + relativeX / transform.scale;
-        const canvasY = BOARD_BASE_SIZE / 2 + relativeY / transform.scale;
+        // Con il nuovo sistema, il centro è (0, 0)
+        const canvasX = relativeX / transform.scale;
+        const canvasY = relativeY / transform.scale;
 
         // Calculate new translate to keep mouse point fixed
-        const newRelativeX = (canvasX - BOARD_BASE_SIZE / 2) * newScale;
-        const newRelativeY = (canvasY - BOARD_BASE_SIZE / 2) * newScale;
+        const newRelativeX = canvasX * newScale;
+        const newRelativeY = canvasY * newScale;
         const newTranslateX = mouseX - centerX - newRelativeX;
         const newTranslateY = mouseY - centerY - newRelativeY;
 
