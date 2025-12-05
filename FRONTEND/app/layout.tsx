@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import ThemeProvider from '@/components/providers/ThemeProvider';
+import { LoadingScreenProvider } from '@/components/providers/LoadingScreenProvider';
 import Navbar from '@/components/organisms/Navbar/Navbar';
 import './globals.css';
 
@@ -17,8 +18,10 @@ export default function RootLayout({
     <html lang="it">
       <body>
         <ThemeProvider>
-          <Navbar />
-          {children}
+          <LoadingScreenProvider>
+            <Navbar />
+            {children}
+          </LoadingScreenProvider>
         </ThemeProvider>
       </body>
     </html>

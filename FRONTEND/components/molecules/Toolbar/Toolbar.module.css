@@ -10,6 +10,28 @@
   pointer-events: auto;
 }
 
+/* Desktop Order: Plus (centerGroup), Question (leftGroup), Menu (rightGroup) */
+.centerGroup { order: 1; }
+.leftGroup { order: 2; }
+.rightGroup { order: 3; }
+
+@media (max-width: 768px) {
+  .toolbar {
+    flex-direction: row;
+    width: 100%;
+    left: 0;
+    right: 0;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    gap: 0;
+  }
+
+  /* Mobile Order: Question (leftGroup), Plus (centerGroup), Menu (rightGroup) */
+  .leftGroup { order: 1; }
+  .centerGroup { order: 2; }
+  .rightGroup { order: 3; }
+}
+
 /* Le dimensioni dei button sono gestite dal componente IconButton */
 /* Rimossi gli override per rispettare le dimensioni atomic design */
-

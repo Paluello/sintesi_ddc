@@ -98,6 +98,7 @@ export default function TutorialModal({ open, onClose, onComplete }: TutorialMod
       hideImage={true}
       contentClassName={styles.tutorialContainer}
       wrapperClassName={styles.tutorialWrapper}
+      surfaceClassName={styles.tutorialSurface}
       overlayAlignItems="flex-start"
       svgPath={svgPath}
     >

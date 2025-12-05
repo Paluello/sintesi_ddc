@@ -10,9 +10,11 @@ import TutorialModal from '@/components/organisms/TutorialModal/TutorialModal';
 import LoadingScreen from '@/components/organisms/LoadingScreen/LoadingScreen';
 import Postit from '@/components/organisms/Postit/Postit';
 import Toolbar from '@/components/molecules/Toolbar/Toolbar';
+import SideMenu from '@/components/organisms/SideMenu/SideMenu';
 import { Postit as PostitType, PostitCreateData } from '@/types/postit';
 import { ensureAnonymousAuth } from '@/lib/auth';
 import { TUTORIAL_STORAGE_KEY } from '@/components/organisms/TutorialModal/tutorialConfig';
+import { useLoadingScreen } from '@/components/providers/LoadingScreenProvider';
 import styles from './page.module.css';
 
 export default function HomePage() {
@@ -21,11 +23,12 @@ export default function HomePage() {
   const [openedBaloonModalOpen, setOpenedBaloonModalOpen] = useState(false);
   const [authReady, setAuthReady] = useState(false);
   const [tutorialOpen, setTutorialOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [clickPosition, setClickPosition] = useState<{ x: number; y: number } | null>(null);
   const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   const [initialPostitIds, setInitialPostitIds] = useState<Set<number> | null>(null);
-  const [centerDebugInfo, setCenterDebugInfo] = useState<{ viewportX: number; viewportY: number; canvasX: number; canvasY: number } | null>(null);
   const { postits, loading, error, isOfflineMode, addPostit, updatePostitPosition } = usePostits();
+  const { setIsVisible: setLoadingScreenVisible } = useLoadingScreen();
   const canvasRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const mouseDownRef = useRef<{ x: number; y: number; time: number } | null>(null);
@@ -66,6 +69,11 @@ export default function HomePage() {
     return true; // Server connesso
   })();
 
+  // Sincronizza lo stato del LoadingScreen con il context
+  useEffect(() => {
+    setLoadingScreenVisible(showLoadingScreen);
+  }, [showLoadingScreen, setLoadingScreenVisible]);
+
   // Traccia gli ID dei postit presenti al primo render dopo il loading screen
   useEffect(() => {
     if (!showLoadingScreen && !loading && initialPostitIds === null) {
@@ -74,44 +82,6 @@ export default function HomePage() {
     }
   }, [showLoadingScreen, loading, postits, initialPostitIds]);
 
-  // Aggiorna le informazioni di debug del centro
-  useEffect(() => {
-    if (process.env.NODE_ENV !== 'development') return;
-    
-    const container = containerRef.current;
-    if (!container) return;
-
-    const updateDebugInfo = () => {
-      const rect = container.getBoundingClientRect();
-      const viewportCenterX = rect.width / 2;
-      const viewportCenterY = rect.height / 2;
-      const canvasCoords = viewportToCanvas(viewportCenterX, viewportCenterY, rect.width, rect.height);
-      
-      setCenterDebugInfo({
-        viewportX: viewportCenterX,
-        viewportY: viewportCenterY,
-        canvasX: canvasCoords.x,
-        canvasY: canvasCoords.y,
-      });
-    };
-
-    updateDebugInfo();
-
-    // Aggiorna quando cambia il transform o quando si fa resize
-    const handleResize = () => {
-      updateDebugInfo();
-    };
-
-    window.addEventListener('resize', handleResize);
-    
-    // Aggiorna periodicamente per catturare cambiamenti durante pan/zoom
-    const interval = setInterval(updateDebugInfo, 100);
-    
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [viewportToCanvas, transform]);
 
   // Inizializza la board centrata al mount e al resize
   useEffect(() => {
@@ -165,7 +135,7 @@ export default function HomePage() {
 
     const handleWheel = (e: WheelEvent) => {
       // Disabilita zoom se il tutorial è aperto o se un modal è aperto
-      if (tutorialOpen || modalOpen || openedBaloonModalOpen) {
+      if (tutorialOpen || modalOpen || openedBaloonModalOpen || menuOpen) {
         return;
       }
       handleWheelZoom(e, container);
@@ -177,11 +147,11 @@ export default function HomePage() {
     return () => {
       container.removeEventListener('wheel', handleWheel, { capture: true });
     };
-  }, [handleWheelZoom, tutorialOpen, modalOpen, openedBaloonModalOpen]);
+  }, [handleWheelZoom, tutorialOpen, modalOpen, openedBaloonModalOpen, menuOpen]);
 
   const handlePageClick = (e: React.MouseEvent<HTMLDivElement>) => {
     // Ignora click se il tutorial è aperto, se si sta facendo pan o se un modal è aperto
-    if (tutorialOpen || isPanning || modalOpen || openedBaloonModalOpen) {
+    if (tutorialOpen || isPanning || modalOpen || openedBaloonModalOpen || menuOpen) {
       return;
     }
     
@@ -254,7 +224,7 @@ export default function HomePage() {
   };
 
   const handleToolbarCreateClick = useCallback(() => {
-    if (tutorialOpen || modalOpen || openedBaloonModalOpen) {
+    if (tutorialOpen || modalOpen || openedBaloonModalOpen || menuOpen) {
       return;
     }
 
@@ -262,15 +232,19 @@ export default function HomePage() {
     // indipendentemente dal transform corrente
     setClickPosition({ x: 0, y: 0 });
     setModalOpen(true);
-  }, [tutorialOpen, modalOpen, openedBaloonModalOpen]);
+  }, [tutorialOpen, modalOpen, openedBaloonModalOpen, menuOpen]);
 
   const handleToolbarHelpClick = useCallback(() => {
     setTutorialOpen(true);
   }, []);
 
+  const handleToolbarMenuClick = useCallback(() => {
+    setMenuOpen(true);
+  }, []);
+
   const handleCanvasMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     // Non fare pan se il tutorial è aperto o se un modal è aperto
-    if (tutorialOpen || modalOpen || openedBaloonModalOpen) {
+    if (tutorialOpen || modalOpen || openedBaloonModalOpen || menuOpen) {
       return;
     }
     
@@ -322,7 +296,7 @@ export default function HomePage() {
 
   const handleCanvasTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     // Non fare pan se il tutorial è aperto o se un modal è aperto
-    if (tutorialOpen || modalOpen || openedBaloonModalOpen) {
+    if (tutorialOpen || modalOpen || openedBaloonModalOpen || menuOpen) {
       return;
     }
     
@@ -493,31 +467,19 @@ export default function HomePage() {
           onComplete={() => setTutorialOpen(false)}
         />
 
-        {!modalOpen && !openedBaloonModalOpen && !tutorialOpen && (
+        <SideMenu
+          isOpen={menuOpen}
+          onClose={() => setMenuOpen(false)}
+        />
+
+        {!modalOpen && !openedBaloonModalOpen && !tutorialOpen && !menuOpen && (
           <Toolbar
             onPlusClick={handleToolbarCreateClick}
             onQuestionmarkClick={handleToolbarHelpClick}
+            onMenuClick={handleToolbarMenuClick}
           />
         )}
 
-        {/* Indicatore di debug per il centro */}
-        {process.env.NODE_ENV === 'development' && centerDebugInfo && !showLoadingScreen && (
-          <div className={styles.debugCenter}>
-            <div className={styles.debugCrosshair} />
-            <div className={styles.debugInfo}>
-              <div><strong>Centro Viewport:</strong></div>
-              <div>X: {centerDebugInfo.viewportX.toFixed(1)}px</div>
-              <div>Y: {centerDebugInfo.viewportY.toFixed(1)}px</div>
-              <div style={{ marginTop: '8px' }}><strong>Centro Canvas:</strong></div>
-              <div>X: {centerDebugInfo.canvasX.toFixed(1)}</div>
-              <div>Y: {centerDebugInfo.canvasY.toFixed(1)}</div>
-              <div style={{ marginTop: '8px' }}><strong>Transform:</strong></div>
-              <div>Scale: {transform.scale.toFixed(2)}</div>
-              <div>TranslateX: {transform.translateX.toFixed(1)}px</div>
-              <div>TranslateY: {transform.translateY.toFixed(1)}px</div>
-            </div>
-          </div>
-        )}
       </div>
     </>
   );

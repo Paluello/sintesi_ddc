@@ -1,5 +1,10 @@
 .tutorialWrapper {
-  padding-top: clamp(16px, 3vw, 32px);
+  max-height: none !important;
+}
+
+.tutorialSurface {
+  /* Override max-height per permettere al modal di allungarsi quanto il contenuto */
+  max-height: none !important;
 }
 
 .tutorialContainer {

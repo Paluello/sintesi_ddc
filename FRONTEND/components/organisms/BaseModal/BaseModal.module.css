@@ -1,6 +1,6 @@
 .overlay {
   position: fixed;
-  top: 70px; /* Inizia sotto la navbar */
+  top: 0;
   right: 0;
   bottom: 0;
   left: 0;
@@ -11,6 +11,7 @@
   align-items: center;
   justify-content: center;
   padding: clamp(var(--spacing-lg, 16px), 5vw, var(--spacing-5xl, 48px));
+  padding-top: calc(50px + clamp(var(--spacing-lg, 16px), 5vw, var(--spacing-5xl, 48px)));
   overflow-y: auto;
 }
 
@@ -30,7 +31,7 @@
 
 .modalWrapper {
   width: 100%;
-  max-height: calc(100vh - 70px); /* Altezza disponibile sotto la navbar */
+  max-height: 100vh;
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -40,7 +41,7 @@
   position: relative;
   width: min(92vw, 560px);
   min-height: 200px;
-  max-height: calc(100vh - 70px - clamp(var(--spacing-lg, 16px), 5vw, var(--spacing-5xl, 48px)) * 2); /* Altezza disponibile meno navbar e padding overlay */
+  max-height: calc(100vh - clamp(var(--spacing-lg, 16px), 5vw, var(--spacing-5xl, 48px)) * 2);
   height: auto;
   overflow: hidden;
   display: flex;

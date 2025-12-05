@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import styles from './IconButton.module.css';
 
-export type IconType = 'plus' | 'questionmark';
+export type IconType = 'plus' | 'questionmark' | 'menu';
 export type ButtonSize = 'small' | 'medium' | 'large';
 
 interface IconButtonProps {
@@ -16,6 +16,7 @@ interface IconButtonProps {
 const ICON_PATHS: Record<IconType, string> = {
   plus: '/images/tasti/butt_plus.svg',
   questionmark: '/images/tasti/butt_questionmark.svg',
+  menu: '/images/tasti/butt_menù.svg',
 };
 
 export default function IconButton({ icon, size = 'medium', onClick, 'aria-label': ariaLabel }: IconButtonProps) {

@@ -1,18 +1,13 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
+import { useLoadingScreen } from '@/components/providers/LoadingScreenProvider';
 import styles from './Navbar.module.css';
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
   const [scale, setScale] = useState(1);
-  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const navbarRef = useRef<HTMLElement>(null);
-
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
+  const { isVisible: isLoadingScreenVisible } = useLoadingScreen();
 
   useEffect(() => {
     const checkProximity = () => {
@@ -24,11 +19,11 @@ export default function Navbar() {
       const availableWidth = navbarWidth - padding;
 
       // Larghezza totale degli elementi quando sono a dimensione normale
-      // Pulsante menu: 40px + Logo: ~127px + Clone: 40px = ~207px
-      const totalElementsWidth = 207;
+      // Solo Logo: ~127px
+      const totalElementsWidth = 130;
       
       // Soglia minima di larghezza disponibile prima di iniziare a rimpicciolire
-      const minAvailableWidth = 250;
+      const minAvailableWidth = 180;
       
       // Se la larghezza disponibile è minore della soglia, calcola la scala
       if (availableWidth < minAvailableWidth) {
@@ -57,60 +52,20 @@ export default function Navbar() {
       window.removeEventListener('resize', checkProximity);
       clearTimeout(timeoutId);
     };
-  }, [isOpen]); // Aggiungi isOpen come dipendenza per ricontrollare quando il menu si apre/chiude
+  }, []);
 
   return (
     <nav 
       ref={navbarRef}
-      className={styles.navbar} 
+      className={`${styles.navbar} ${isLoadingScreenVisible ? styles.hidden : ''}`}
       data-navbar
       style={{ '--navbar-scale': scale } as React.CSSProperties}
     >
-      <button
-        ref={menuButtonRef}
-        className={styles.menuButton}
-        onClick={toggleMenu}
-        aria-label={isOpen ? 'Chiudi menu' : 'Apri menu'}
-        type="button"
-      >
-        <Image
-          src={isOpen ? '/images/tasti/butt_cross.svg' : '/images/tasti/butt_menù.svg'}
-          alt={isOpen ? 'Chiudi menu' : 'Apri menu'}
-          width={50}
-          height={50}
-          className={`${styles.icon} ${!isOpen ? styles.iconWhite : ''}`}
-        />
-      </button>
-      
       <img
         src="/images/titolo.svg"
         alt="Titolo"
         className={styles.logo}
       />
-      
-      <button
-        className={styles.menuButtonClone}
-        type="button"
-        aria-hidden="true"
-        tabIndex={-1}
-      >
-        <Image
-          src="/images/tasti/butt_menù.svg"
-          alt=""
-          width={50}
-          height={50}
-          className={styles.icon}
-        />
-      </button>
-      
-      {isOpen && (
-        <div className={styles.menu}>
-          <div className={styles.menuContent}>
-            <span className={styles.menuText}>menù</span>
-          </div>
-        </div>
-      )}
     </nav>
   );
 }
-
