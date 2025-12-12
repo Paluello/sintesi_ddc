@@ -70,7 +70,7 @@ interface PostitProps {
   onClick: () => void;
   onPositionUpdate: (id: number, x: number, y: number) => Promise<void>;
   canvasTransform?: { scale: number; translateX: number; translateY: number };
-  viewportToCanvas?: (x: number, y: number) => { x: number; y: number };
+  viewportToCanvas?: (x: number, y: number, containerWidth?: number, containerHeight?: number) => { x: number; y: number };
   animationDelay?: number; // Delay in millisecondi per l'animazione di entrata
   backgroundColor?: string; // Colore di sfondo per sincronizzare i bordi degli SVG
 }

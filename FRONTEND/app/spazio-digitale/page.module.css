@@ -1,0 +1,161 @@
+/* Mobile First - Base styles per mobile */
+.container {
+  width: 100%;
+  height: 100%;
+  /* Il colore di sfondo è gestito dinamicamente tramite lo stile inline nel componente */
+  position: relative;
+  overflow: hidden;
+  cursor: default; /* Mobile: cursor normale */
+  -webkit-overflow-scrolling: touch; /* Smooth scroll su iOS */
+  touch-action: none; /* Disabilita scroll nativo per gestire pan manualmente */
+}
+
+.container.panning {
+  cursor: grabbing;
+}
+
+.container:not(.panning) {
+  cursor: default;
+}
+
+.error {
+  position: absolute;
+  top: 10px; /* Mobile: più vicino al top */
+  left: 10px;
+  right: 10px;
+  transform: none; /* Mobile: no transform */
+  z-index: var(--z-index-expanded);
+  background: var(--color-error-bg);
+  color: var(--color-error);
+  padding: var(--spacing-lg) var(--spacing-2xl);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  font-size: var(--font-size-body);
+  text-align: center;
+}
+
+.offlineBanner {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  z-index: var(--z-index-expanded);
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+  padding: var(--spacing-lg) var(--spacing-2xl);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  font-size: var(--font-size-body);
+  text-align: center;
+  border: var(--border-width-thin) solid var(--color-warning-border);
+}
+
+@media (min-width: 480px) {
+  .offlineBanner {
+    top: 15px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    padding: var(--spacing-lg) var(--spacing-3xl);
+    max-width: 90%;
+  }
+}
+
+@media (min-width: 768px) {
+  .offlineBanner {
+    top: 20px;
+    padding: var(--spacing-lg) var(--gap-2xl);
+  }
+}
+
+.postitsContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  /* Dimensioni minime per il layout, ma la board è ora flessibile/infinita */
+  min-width: 2000px;
+  min-height: 2000px;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+}
+
+/* Titolo mobile - assoluto sullo sfondo della board, centrato come desktop ma più piccolo */
+.titleMobile {
+  display: flex;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  z-index: var(--z-index-base);
+  pointer-events: none;
+}
+
+.titleMobile .titleImage {
+  max-width: 267px; /* 1/3 di 800px (dimensione desktop) */
+  height: auto;
+}
+
+/* Titolo desktop - nascosto su mobile */
+.titleDesktop {
+  display: none;
+}
+
+.titleImage {
+  width: auto;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Tablet - 480px e oltre */
+@media (min-width: 480px) {
+  .error {
+    top: 15px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    padding: var(--spacing-lg) var(--spacing-3xl);
+    max-width: 90%;
+  }
+}
+
+/* Desktop - 768px e oltre */
+@media (min-width: 768px) {
+  .container:not(.panning) {
+    cursor: crosshair; /* Desktop: cursor crosshair quando non si fa pan */
+  }
+
+  .error {
+    top: 20px;
+    padding: var(--spacing-lg) var(--gap-2xl);
+  }
+
+  /* Nascondi titolo mobile su desktop */
+  .titleMobile {
+    display: none;
+  }
+
+  /* Mostra titolo desktop assoluto sullo sfondo della board */
+  /* Posizionato esattamente al centro del canvas (0, 0) - il centro dell'SVG corrisponde al centro del canvas */
+  .titleDesktop {
+    display: flex;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    z-index: var(--z-index-base);
+    pointer-events: none;
+  }
+
+  .titleDesktop .titleImage {
+    max-width: 500px;
+    height: auto;
+  }
+}
+

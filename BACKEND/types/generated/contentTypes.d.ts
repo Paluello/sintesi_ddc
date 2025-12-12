@@ -520,6 +520,34 @@ export interface ApiTemaTema extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiZineZine extends Struct.CollectionTypeSchema {
+  collectionName: 'zines';
+  info: {
+    displayName: 'ZINE';
+    pluralName: 'zines';
+    singularName: 'zine';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    DESCRIZIONE: Schema.Attribute.RichText;
+    FILE: Schema.Attribute.Media<'files'>;
+    IMMAGINE: Schema.Attribute.Media<'images'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::zine.zine'> &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    SVG: Schema.Attribute.Media<'images'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface PluginCommentsComment extends Struct.CollectionTypeSchema {
   collectionName: 'plugin_comments_comments';
   info: {
@@ -1141,6 +1169,7 @@ declare module '@strapi/strapi' {
       'api::postit.postit': ApiPostitPostit;
       'api::settore.settore': ApiSettoreSettore;
       'api::tema.tema': ApiTemaTema;
+      'api::zine.zine': ApiZineZine;
       'plugin::comments.comment': PluginCommentsComment;
       'plugin::comments.comment-report': PluginCommentsCommentReport;
       'plugin::content-releases.release': PluginContentReleasesRelease;

@@ -16,8 +16,8 @@ interface UseCanvasTransformReturn {
   handleWheel: (e: WheelEvent, container: HTMLElement) => void;
   startPan: (e: React.MouseEvent | React.TouchEvent) => void;
   isPanning: boolean;
-  viewportToCanvas: (x: number, y: number) => { x: number; y: number };
-  canvasToViewport: (x: number, y: number) => { x: number; y: number };
+  viewportToCanvas: (x: number, y: number, containerWidth?: number, containerHeight?: number) => { x: number; y: number };
+  canvasToViewport: (x: number, y: number, containerWidth?: number, containerHeight?: number) => { x: number; y: number };
 }
 
 const MIN_SCALE = 0.5;

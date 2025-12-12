@@ -1,0 +1,39 @@
+{
+  "kind": "collectionType",
+  "collectionName": "zines",
+  "info": {
+    "singularName": "zine",
+    "pluralName": "zines",
+    "displayName": "ZINE"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "IMMAGINE": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "SVG": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "FILE": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "files"
+      ]
+    },
+    "DESCRIZIONE": {
+      "type": "richtext"
+    }
+  }
+}

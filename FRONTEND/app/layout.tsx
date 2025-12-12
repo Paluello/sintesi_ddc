@@ -1,7 +1,9 @@
 import { Metadata } from 'next';
 import ThemeProvider from '@/components/providers/ThemeProvider';
 import { LoadingScreenProvider } from '@/components/providers/LoadingScreenProvider';
+import { PageTransitionProvider } from '@/components/providers/PageTransitionProvider';
 import Navbar from '@/components/organisms/Navbar/Navbar';
+import PageTransition from '@/components/organisms/PageTransition/PageTransition';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -19,8 +21,13 @@ export default function RootLayout({
       <body>
         <ThemeProvider>
           <LoadingScreenProvider>
-            <Navbar />
-            {children}
+            <PageTransitionProvider>
+              <Navbar />
+              <div style={{ marginTop: '70px', height: 'calc(100vh - 70px)', overflow: 'hidden' }}>
+                {children}
+              </div>
+              <PageTransition />
+            </PageTransitionProvider>
           </LoadingScreenProvider>
         </ThemeProvider>
       </body>

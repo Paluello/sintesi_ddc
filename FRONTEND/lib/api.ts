@@ -4,6 +4,7 @@ import { Postit, PostitCreateData, PostitUpdateData } from '@/types/postit';
 import { Comment, CommentCreateData } from '@/types/comment';
 import { Settore } from '@/types/settore';
 import { Tema } from '@/types/tema';
+import { Zine } from '@/types/zine';
 import { StrapiCollectionResponse, StrapiResponse } from '@/types/api';
 
 const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
@@ -403,6 +404,31 @@ export async function createComment(
       errorMessage: error.response?.data?.error?.message || error.message,
       status: error.response?.status,
       statusText: error.response?.statusText,
+    });
+    throw error;
+  }
+}
+
+// API Zine
+export async function getZines(): Promise<Zine[]> {
+  try {
+    const response = await api.get<StrapiCollectionResponse<Zine>>(
+      '/api/zines',
+      {
+        params: {
+          publicationState: 'live',
+          sort: 'createdAt:asc',
+          populate: ['IMMAGINE', 'SVG', 'FILE'],
+        },
+      }
+    );
+    console.log('[getZines] Risposta API:', response.data);
+    return response.data.data || [];
+  } catch (error: any) {
+    console.error('[getZines] Errore:', {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
     });
     throw error;
   }

@@ -1,0 +1,200 @@
+.zineSection {
+  position: relative;
+  width: 100%;
+  min-height: auto;
+  padding: var(--spacing-xl);
+  overflow: visible;
+}
+
+.sectionContent {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xl);
+}
+
+/* Layout alternato */
+.rightLayout .sectionContent {
+  flex-direction: row-reverse;
+}
+
+/* Sfondo colorato - alternato a coppie */
+.zineSection.white {
+  background-color: var(--color-bg-primary);
+}
+
+.zineSection.black {
+  background-color: #000000;
+}
+
+/* Container immagine PNG */
+.imageContainer {
+  position: relative;
+  flex: 0 0 45%;
+  max-width: 500px;
+  z-index: 2;
+  order: 1;
+}
+
+.imageLeft {
+  align-self: flex-start;
+}
+
+.imageRight {
+  align-self: flex-end;
+}
+
+.zineImage {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  position: relative;
+  transform: translateY(-25%);
+}
+
+/* Contenuti (tutti i figli tranne imageContainer) */
+.sectionContent > :not(.imageContainer) {
+  position: relative;
+  z-index: 1;
+  order: 2;
+  flex: 1;
+  padding: var(--spacing-xl);
+  background-color: transparent;
+}
+
+.sectionContent > :not(.imageContainer):first-of-type {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+/* Container SVG */
+.svgContainer {
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.svgContent {
+  width: 100%;
+  height: auto;
+}
+
+.zineSection.white .svgContent {
+  color: #000000;
+}
+
+.zineSection.black .svgContent {
+  color: #ffffff;
+}
+
+.svgContent svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.svgContent svg *,
+.svgContent svg {
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+.svgContent svg [fill="none"] {
+  fill: none !important;
+}
+
+.svgLoader,
+.svgError {
+  padding: var(--spacing-lg);
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body);
+}
+
+.zineSection.black .svgLoader,
+.zineSection.black .svgError {
+  color: #ffffff;
+}
+
+/* Descrizione */
+.description {
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-medium);
+  color: var(--color-text-primary);
+  max-width: 600px;
+}
+
+.zineSection.black .description {
+  color: #ffffff;
+}
+
+/* Download Container */
+.downloadContainer {
+  margin-top: var(--spacing-lg);
+}
+
+.downloadButton {
+  display: inline-block;
+  padding: var(--spacing-md) var(--spacing-xl);
+  background-color: var(--color-blue);
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-button);
+  font-weight: var(--font-weight-medium);
+  transition: background-color var(--transition-normal);
+  cursor: pointer;
+}
+
+.downloadButton:hover {
+  background-color: var(--color-blue-dark);
+}
+
+.zineSection.black .downloadButton {
+  background-color: var(--color-blue);
+}
+
+.zineSection.black .downloadButton:hover {
+  background-color: var(--color-blue-dark);
+}
+
+/* Download Button Container */
+.downloadButtonContainer {
+  margin-top: var(--spacing-md);
+  display: flex;
+  justify-content: center;
+}
+
+.errorMessage {
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: rgba(255, 0, 0, 0.1);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  border-radius: var(--radius-sm);
+  color: var(--color-error);
+  font-size: var(--font-size-small);
+}
+
+.zineSection.black .errorMessage {
+  background-color: rgba(255, 0, 0, 0.2);
+  border-color: rgba(255, 0, 0, 0.5);
+  color: #ff6b6b;
+}
+
+/* Media query per mobile - solo aumentare dimensioni immagini */
+@media (max-width: 768px) {
+  .imageContainer {
+    flex: 0 0 55%;
+    max-width: 500px;
+  }
+}
+

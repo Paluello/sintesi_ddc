@@ -1,0 +1,215 @@
+.container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  background-color: #000000;
+  -webkit-overflow-scrolling: touch; /* Smooth scroll su iOS */
+  /* Forza lo scroll anche quando il contenuto è poco */
+  overscroll-behavior-y: auto;
+}
+
+.content {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-bottom: var(--spacing-5xl);
+  position: relative;
+  overflow: visible;
+}
+
+.loading,
+.error,
+.empty {
+  text-align: center;
+  padding: var(--spacing-5xl);
+  color: #ffffff;
+  font-size: var(--font-size-body);
+}
+
+.error {
+  color: var(--color-error);
+}
+
+.empty {
+  color: var(--color-text-muted);
+}
+
+/* ============================================
+   SEZIONE INTRODUTTIVA
+   ============================================ */
+.introSection {
+  width: 100%;
+  padding: var(--spacing-3xl) var(--spacing-xl);
+  background-color: #000000;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+
+.introContent {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.mainTitle {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin-bottom: var(--spacing-xl);
+  display: block;
+  color: #ffffff; /* Sfondo nero = testo bianco */
+}
+
+.mainTitle svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.mainTitle svg *,
+.mainTitle svg {
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+.mainTitle svg [fill="none"] {
+  fill: none !important;
+}
+
+.sectionTitle {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-bold);
+  color: #ffffff;
+  margin-bottom: var(--spacing-lg);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.introParagraph {
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-medium);
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: var(--spacing-md);
+}
+
+.introParagraph:last-child {
+  margin-bottom: 0;
+}
+
+/* ============================================
+   SEZIONE DESCRIZIONI (sopra a tutto)
+   ============================================ */
+.descriptionsSection {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.descriptionCard {
+  width: 100%;
+  padding: var(--spacing-3xl) var(--spacing-xl);
+}
+
+/* L'ultima description card deve compensare lo spostamento dell'immagine PNG 
+   che ha transform: translateY(-25%) - aggiungiamo padding per fare spazio */
+.descriptionCard:last-child {
+  padding-bottom: 10%;
+}
+
+/* Alternanza colori sfondo */
+.descriptionCard.white {
+  background-color: var(--color-bg-primary);
+}
+
+.descriptionCard.black {
+  background-color: #000000;
+}
+
+.descriptionContent {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.zineNumber {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.descriptionCard.black .zineNumber {
+  color: #ffffff;
+}
+
+.descriptionText {
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-medium);
+  color: var(--color-text-primary);
+}
+
+.descriptionCard.black .descriptionText {
+  color: #ffffff;
+}
+
+.descriptionText p {
+  margin-bottom: var(--spacing-md);
+}
+
+.descriptionText p:last-child {
+  margin-bottom: 0;
+}
+
+/* Download Container nella sezione descrizioni */
+.downloadContainer {
+  margin-top: var(--spacing-lg);
+}
+
+.downloadButton {
+  display: inline-block;
+  padding: var(--spacing-md) var(--spacing-xl);
+  background-color: var(--color-blue);
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-button);
+  font-weight: var(--font-weight-medium);
+  transition: background-color var(--transition-normal);
+  cursor: pointer;
+}
+
+.downloadButton:hover {
+  background-color: var(--color-blue-dark);
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .introSection {
+    padding: var(--spacing-xl);
+  }
+
+  .mainTitle {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .sectionTitle {
+    font-size: var(--font-size-h4);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .introParagraph {
+    font-size: var(--font-size-small);
+  }
+
+  .descriptionCard {
+    padding: var(--spacing-xl);
+  }
+
+  .zineNumber {
+    font-size: var(--font-size-h4);
+  }
+}

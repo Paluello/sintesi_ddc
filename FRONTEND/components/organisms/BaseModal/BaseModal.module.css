@@ -11,7 +11,7 @@
   align-items: center;
   justify-content: center;
   padding: clamp(var(--spacing-lg, 16px), 5vw, var(--spacing-5xl, 48px));
-  padding-top: calc(50px + clamp(var(--spacing-lg, 16px), 5vw, var(--spacing-5xl, 48px)));
+  padding-top: calc(70px + clamp(var(--spacing-lg, 16px), 5vw, var(--spacing-5xl, 48px)));
   overflow-y: auto;
 }
 

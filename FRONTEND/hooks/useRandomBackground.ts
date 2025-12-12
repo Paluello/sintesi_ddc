@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getRandomBackgroundColor, BackgroundColor } from '@/lib/backgroundColors';
+import { getRandomBackgroundColor, BackgroundColor, BACKGROUND_COLORS } from '@/lib/backgroundColors';
 
 /**
  * Hook per gestire il colore di sfondo casuale della pagina
@@ -17,8 +17,8 @@ export function useRandomBackground(): BackgroundColor {
     if (typeof window !== 'undefined') {
       return getRandomBackgroundColor();
     }
-    // Fallback per SSR
-    return '#802928';
+    // Fallback per SSR - usa il primo colore disponibile
+    return BACKGROUND_COLORS[0];
   });
 
   // Il colore viene impostato solo al mount, non cambia durante la sessione
@@ -30,6 +30,8 @@ export function useRandomBackground(): BackgroundColor {
 
   return backgroundColor;
 }
+
+
 
 
 

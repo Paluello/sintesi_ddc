@@ -13,7 +13,19 @@
 /* Desktop Order: Plus (centerGroup), Question (leftGroup), Menu (rightGroup) */
 .centerGroup { order: 1; }
 .leftGroup { order: 2; }
-.rightGroup { order: 3; }
+.rightGroup { 
+  order: 3;
+  position: relative;
+}
+
+.toolbar.onlyMenu {
+  justify-content: center;
+  align-items: center;
+}
+
+.toolbar.onlyMenu .rightGroup {
+  order: 0;
+}
 
 @media (max-width: 768px) {
   .toolbar {
@@ -31,6 +43,14 @@
   .leftGroup { order: 1; }
   .centerGroup { order: 2; }
   .rightGroup { order: 3; }
+
+  .toolbar.onlyMenu {
+    justify-content: flex-end;
+  }
+
+  .toolbar.onlyMenu .rightGroup {
+    order: 0;
+  }
 }
 
 /* Le dimensioni dei button sono gestite dal componente IconButton */

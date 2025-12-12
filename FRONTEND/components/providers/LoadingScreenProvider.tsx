@@ -10,7 +10,7 @@ interface LoadingScreenContextType {
 const LoadingScreenContext = createContext<LoadingScreenContextType | undefined>(undefined);
 
 export function LoadingScreenProvider({ children }: { children: ReactNode }) {
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
 
   return (
     <LoadingScreenContext.Provider value={{ isVisible, setIsVisible }}>
