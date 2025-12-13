@@ -32,9 +32,13 @@ export default function ZineCard({ zine, isLeft, bgColor, hideDescription = fals
 
     const loadSvg = async () => {
       try {
-        const svgUrl = zine.SVG.url.startsWith('http') 
-          ? zine.SVG.url 
-          : `${STRAPI_URL}${zine.SVG.url}`;
+        const url = zine?.SVG?.url;
+        if (!url) {
+          // No SVG available for this zine: skip or show a fallback
+          return;
+        }
+
+        const svgUrl = url.startsWith('http') ? url : `${STRAPI_URL}${url}`;
         
         const response = await fetch(svgUrl);
         if (response.ok) {
