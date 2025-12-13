@@ -1,0 +1,56 @@
+name: Build and Deploy React App
+
+on:
+  push:
+    branches: [ main ]  # Change to your default branch if different
+    paths:
+      - 'FRONTEND/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'FRONTEND/**'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'  # or your preferred Node version
+        cache: 'npm'
+        cache-dependency-path: 'FRONTEND/package-lock.json'
+        
+    - name: Install dependencies
+      working-directory: ./FRONTEND
+      run: npm ci
+      
+    - name: Build React app
+      working-directory: ./FRONTEND
+      run: npm run build
+      env:
+        CI: false  # Disable treating warnings as errors
+      
+    - name: Setup SSH key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+        
+    - name: Deploy to VPS via rsync
+      run: |
+        rsync -avz --delete \
+          -e "ssh -i ~/.ssh/id_rsa -p ${{ secrets.SSH_PORT || 22 }}" \
+          ./FRONTEND/build/ \
+          ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/srv/www/chronoweb
+          
+    - name: Cleanup SSH key
+      if: always()
+      run: rm -f ~/.ssh/id_rsa
