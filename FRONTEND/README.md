@@ -43,3 +43,4 @@ L'account "anonimo" viene creato automaticamente dal backend Strapi all'avvio. S
 - Click su un postit per visualizzare e aggiungere commenti
 - Autenticazione automatica con account "anonimo"
 
+test
