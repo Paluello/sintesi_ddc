@@ -1,4 +1,4 @@
-name: Build and Deploy Next.js App
+name: Build and Deploy FRONTEND
 
 on:
   push:
@@ -70,6 +70,8 @@ jobs:
     - name: Restart Next.js on VPS
       run: |
         ssh -i ~/.ssh/id_rsa -p ${SSH_PORT:-22} ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'EOF'
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
           cd /srv/www/sintesi_ddc
           npm ci --only=production
           pm2 restart nextjs-app || pm2 start "npm run start" --name "nextjs-app"
