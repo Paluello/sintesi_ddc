@@ -38,7 +38,7 @@ jobs:
       working-directory: ./FRONTEND
       env:
         CI: false
-        # add your env vars if needed, e.g. NEXT_PUBLIC_STRAPI_URL
+        NEXT_PUBLIC_STRAPI_URL: ${{ secrets.NEXT_PUBLIC_STRAPI_URL }}
       run: npm run build
 
     - name: Setup SSH key
@@ -62,7 +62,19 @@ jobs:
           ./FRONTEND/package.json ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/srv/www/sintesi_ddc/
         rsync -avz \
           -e "ssh -i ~/.ssh/id_rsa -p $PORT" \
+          ./FRONTEND/package-lock.json ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/srv/www/sintesi_ddc/
+        rsync -avz \
+          -e "ssh -i ~/.ssh/id_rsa -p $PORT" \
           ./FRONTEND/next.config.js ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/srv/www/sintesi_ddc/
+
+    - name: Restart Next.js on VPS
+      run: |
+        ssh -i ~/.ssh/id_rsa -p ${SSH_PORT:-22} ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'EOF'
+          cd /srv/www/sintesi_ddc
+          npm ci --only=production
+          pm2 restart nextjs-app || pm2 start "npm run start" --name "nextjs-app"
+          pm2 save
+        EOF
 
     - name: Cleanup SSH key
       if: always()
